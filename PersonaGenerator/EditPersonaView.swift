@@ -78,12 +78,8 @@ struct EditPersonaView: View {
                 .padding()
             Spacer()
             Button("Save") {
-                let record = Persona(name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone)
                 
-//                if let image = image {
-//                  let asset = CKAsset(fileURL: URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("image.png"))
-//                    record.setValue(image, forKey: "image")
-//                }
+                let record = Persona(name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone)
 
                 database.save(record.record) { (savedRecord, error) in
                            if error == nil {

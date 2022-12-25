@@ -16,12 +16,12 @@ struct Persona {
     let birthdate: Date
     let email: String
     let phone: String
-//    let image: Image
 }
 
 extension Persona {
     var record: CKRecord {
         let record = CKRecord(recordType: "Persona")
+        
         record["name"] = name
         record["headline"] = headline
         record["bio"] = bio
