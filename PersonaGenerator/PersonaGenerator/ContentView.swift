@@ -10,8 +10,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Text("Persona generator")
-            EditPersonaView()
+            CreatePersonaView()
         }
         .padding()
     }

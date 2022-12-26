@@ -12,7 +12,7 @@
 		2BBCEA5929554E2400B5CFE3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5829554E2400B5CFE3 /* ContentView.swift */; };
 		2BBCEA5B29554E2700B5CFE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5A29554E2700B5CFE3 /* Assets.xcassets */; };
 		2BBCEA5E29554E2700B5CFE3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5D29554E2700B5CFE3 /* Preview Assets.xcassets */; };
-		2BBCEA6529554E9300B5CFE3 /* EditPersonaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6429554E9200B5CFE3 /* EditPersonaView.swift */; };
+		2BBCEA6529554E9300B5CFE3 /* CreatePersonaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */; };
 		2BBCEA6729554F1E00B5CFE3 /* PersonaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */; };
 		2BBCEA6929554F6000B5CFE3 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */; };
 		2BBCEA6B29554FFA00B5CFE3 /* NetworkSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6A29554FFA00B5CFE3 /* NetworkSingleton.swift */; };
@@ -26,7 +26,7 @@
 		2BBCEA5829554E2400B5CFE3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2BBCEA5A29554E2700B5CFE3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2BBCEA5D29554E2700B5CFE3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2BBCEA6429554E9200B5CFE3 /* EditPersonaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPersonaView.swift; sourceTree = "<group>"; };
+		2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePersonaView.swift; sourceTree = "<group>"; };
 		2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaModel.swift; sourceTree = "<group>"; };
 		2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		2BBCEA6A29554FFA00B5CFE3 /* NetworkSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSingleton.swift; sourceTree = "<group>"; };
@@ -49,7 +49,7 @@
 				2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
 				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
-				2BBCEA6429554E9200B5CFE3 /* EditPersonaView.swift */,
+				2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */,
 				2BBCEA6A29554FFA00B5CFE3 /* NetworkSingleton.swift */,
 				2BBCEA5529554E2400B5CFE3 /* PersonaGenerator */,
 				2BBCEA5429554E2400B5CFE3 /* Products */,
@@ -160,7 +160,7 @@
 				2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */,
 				2BBCEA6929554F6000B5CFE3 /* ImagePicker.swift in Sources */,
 				2BBCEA6729554F1E00B5CFE3 /* PersonaModel.swift in Sources */,
-				2BBCEA6529554E9300B5CFE3 /* EditPersonaView.swift in Sources */,
+				2BBCEA6529554E9300B5CFE3 /* CreatePersonaView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

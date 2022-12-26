@@ -8,7 +8,7 @@
 import SwiftUI
 import CloudKit
 
-struct EditPersonaView: View {
+struct CreatePersonaView: View {
     
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
@@ -38,7 +38,7 @@ struct EditPersonaView: View {
     
     var body: some View {
         VStack {
-            VStack {
+                Text("Create Persona")
                 Image(uiImage: image!)
                     .resizable()
                     .frame(width: 200, height: 200)
@@ -62,7 +62,6 @@ struct EditPersonaView: View {
                     Button("Generate Random") {
                         image = networkSingleton.fetchImage()
                     }
-                }
             }
             .sheet(isPresented: $showingImagePicker) {
                 ImagePicker(image: self.$image, sourcetype: self.$sourceType)
@@ -95,14 +94,15 @@ struct EditPersonaView: View {
                         Text("Select a photo")
                     }
                     
-                    // Display the selected images
+                    // Display the gallery images
                     ScrollView(.horizontal) {
                         HStack {
                             ForEach(images, id: \.self) { image in
                                 Image(uiImage: image)
                                     .resizable()
-                                    .scaledToFit()
-                                
+                                                            .frame(width: 300, height: 200)
+                                                            .aspectRatio(contentMode: .fill)
+                                                            .clipped()
                             }
                         }
                     }
@@ -111,12 +111,7 @@ struct EditPersonaView: View {
                     GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
                 }
                 .onAppear {
-                    // Add the selected image to the images array
-//                    if let galleryImage = self.galleryImage {
-//                        self.images.append(galleryImage)
-//                    }
-//                    images.append(self.galleryImage!)
-//                    print(images)
+                    // Set default images in gallery
                 }
             }
             
@@ -153,7 +148,7 @@ struct EditPersonaView: View {
 
 struct EditPersonaView_Previews: PreviewProvider {
     static var previews: some View {
-        EditPersonaView()
+        CreatePersonaView()
     }
 }
 
