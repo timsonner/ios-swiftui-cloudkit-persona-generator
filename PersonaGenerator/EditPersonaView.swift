@@ -134,7 +134,7 @@ struct EditPersonaView: View {
                 }
                 
                 // TODO: add imageAssetArray property to PersonaModel
-                let record = Persona(title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone)
+                let record = Persona(title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
                 
                 database.save(record.record) { (savedRecord, error) in
                     if error == nil {
@@ -145,7 +145,6 @@ struct EditPersonaView: View {
                         print(error)
                     }
                 }
-                
             }
         } // Some View
     } // Body

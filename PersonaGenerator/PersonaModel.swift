@@ -18,6 +18,7 @@ struct Persona {
     let birthdate: Date
     let email: String
     let phone: String
+    let images: [CKAsset]
 }
 
 extension Persona {
@@ -39,6 +40,7 @@ extension Persona {
         record["birthdate"] = birthdate
         record["email"] = email
         record["phone"] = phone
+        record["images"] = images
         return record
     }
 }

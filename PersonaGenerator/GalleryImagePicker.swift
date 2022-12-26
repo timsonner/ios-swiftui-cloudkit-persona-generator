@@ -1,5 +1,5 @@
 //
-//  ImagePicker.swift
+//  GalleryImagePicker.swift
 //  Persona Generator
 //
 //  Created by Timothy Sonner on 12/21/22.
@@ -39,9 +39,5 @@ struct GalleryImagePicker: UIViewControllerRepresentable {
     
     
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<GalleryImagePicker>) {
-//        // Add the selected image to the images array
-//        if let image = image {
-//            images.append(image)
-//        }
     }
 }
