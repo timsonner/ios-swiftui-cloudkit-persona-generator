@@ -8,13 +8,12 @@
 import SwiftUI
 
 class NetworkSingleton {
-    func fetchImage() -> Image {
-        var image: Image = Image(systemName: "person")
+    func fetchImage() -> UIImage {
+        var image: UIImage = UIImage(systemName: "person")!
             let url = URL(string: "https://thispersondoesnotexist.com/image")!
                 if let data = try? Data(contentsOf: url) {
-                    image = Image(uiImage: UIImage(data: data)!)
+                    image = UIImage(data: data)!
                     }
         return image
             }
         }
-

@@ -11,7 +11,7 @@ import CloudKit
 struct EditPersonaView: View {
     
     // User avatar variables
-    @State private var image: Image? = Image(systemName: "person.circle.fill")
+    @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
     
     @State private var showingImagePicker = false
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
@@ -32,7 +32,7 @@ struct EditPersonaView: View {
     var body: some View {
         VStack {
             VStack {
-                image?
+                Image(uiImage: image!)
                     .resizable()
                     .frame(width: 200, height: 200)
                     .scaledToFit()
@@ -78,8 +78,8 @@ struct EditPersonaView: View {
                 .padding()
             Spacer()
             Button("Save") {
-                
-                let record = Persona(name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone)
+
+                let record = Persona(image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone)
 
                 database.save(record.record) { (savedRecord, error) in
                            if error == nil {
