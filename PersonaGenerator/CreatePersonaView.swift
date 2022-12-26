@@ -1,5 +1,5 @@
 //
-//  EditPersonaView.swift
+//  CreatePersonaView.swift
 //  Persona Generator
 //
 //  Created by Timothy Sonner on 12/21/22.
@@ -32,112 +32,114 @@ struct CreatePersonaView: View {
     
     @State private var imageAssetArray: [CKAsset] = []
     
-    
     // declare database
     let database = CKContainer.default().privateCloudDatabase
     
     var body: some View {
-        VStack {
-                Text("Create Persona")
-                Image(uiImage: image!)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .scaledToFit()
-                    .clipShape(Circle())
-                    .foregroundColor(.gray)
-                HStack {
-                    Button("Select Image") {
-                        sourceType = .photoLibrary
-                        self.showingImagePicker = true
-                    }
-                    Button("Take Photo") {
-                        sourceType = .camera
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                            self.showingImagePicker = true
-                        } else {
-                            print("Camera not available")
-                            // Show an error message or take some other action
-                        }
-                    }
-                    Button("Generate Random") {
-                        image = networkSingleton.fetchImage()
-                    }
-            }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(image: self.$image, sourcetype: self.$sourceType)
-            }
+        ScrollView(showsIndicators: false) {
             VStack {
-                TextField("Persona title", text: $title)
-                    .padding()
-                TextField("Name", text: $name)
-                    .padding()
-                TextField("Headline", text: $headline)
-                    .padding()
-                TextField("Bio", text: $bio)
-                    .padding()
-                    .multilineTextAlignment(.leading)
-                DatePicker(selection: $birthdate, displayedComponents: .date) {
-                    Text("Birthdate")
+                    Text("Create Persona")
+                    Image(uiImage: image!)
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                        .scaledToFit()
+                        .clipShape(Circle())
+                        .foregroundColor(.gray)
+                    HStack {
+                        Button("Select Image") {
+                            sourceType = .photoLibrary
+                            self.showingImagePicker = true
+                        }
+                        Button("Take Photo") {
+                            sourceType = .camera
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                self.showingImagePicker = true
+                            } else {
+                                print("Camera not available")
+                                // Show an error message or take some other action
+                            }
+                        }
+                        Button("Generate Random") {
+                            image = networkSingleton.fetchImage()
+                        }
                 }
-                .padding()
-                TextField("Email", text: $email)
-                    .padding()
-                TextField("Phone", text: $phone)
-                    .padding()
+                .sheet(isPresented: $showingImagePicker) {
+                    ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+                }
                 
-                // MARK: Image Gallery
                 VStack {
-                    Button(action: {
-                        // Show the image picker
-                        self.showingGalleryImagePicker = true
-                    }) {
-                        Text("Select a photo")
+                    TextField("Persona title", text: $title)
+                        .padding()
+                    TextField("Name", text: $name)
+                        .padding()
+                    TextField("Headline", text: $headline)
+                        .padding()
+                    TextField("Bio", text: $bio)
+                        .padding()
+                        .multilineTextAlignment(.leading)
+                    DatePicker(selection: $birthdate, displayedComponents: .date) {
+                        Text("Birthdate")
                     }
+                    .padding()
+                    TextField("Email", text: $email)
+                        .padding()
+                    TextField("Phone", text: $phone)
+                        .padding()
                     
-                    // Display the gallery images
-                    ScrollView(.horizontal) {
-                        HStack {
-                            ForEach(images, id: \.self) { image in
-                                Image(uiImage: image)
-                                    .resizable()
-                                                            .frame(width: 300, height: 200)
-                                                            .aspectRatio(contentMode: .fill)
-                                                            .clipped()
+                    // MARK: Image Gallery
+                    VStack {
+                        Button(action: {
+                            // Show the image picker
+                            self.showingGalleryImagePicker = true
+                        }) {
+                            Text("Select a photo")
+                        }
+                        
+                        // Display the gallery images
+                        ScrollView(.horizontal) {
+                            HStack {
+                                ForEach(images, id: \.self) { image in
+                                    Image(uiImage: image)
+                                        .resizable()
+                                                                .frame(width: 300, height: 200)
+                                                                .aspectRatio(contentMode: .fill)
+                                                                .clipped()
+                                }
                             }
                         }
                     }
-                }
-                .sheet(isPresented: $showingGalleryImagePicker) {
-                    GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
-                }
-                .onAppear {
-                    // Set default images in gallery
-                }
-            }
-            
-            Spacer()
-            
-            Button("Save") {
-                
-                for image in images {
-                    // Convert the UIImage to a CKAsset
-                    let imageData = image.pngData()
-                    let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
-                    try? imageData?.write(to: imageFileURL)
-                    let imageAsset = CKAsset(fileURL: imageFileURL)
-                    imageAssetArray.append(imageAsset)
+                    .sheet(isPresented: $showingGalleryImagePicker) {
+                        GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
+                    }
+                    .onAppear {
+                        // Set default images in gallery
+                    }
                 }
                 
-                // TODO: add imageAssetArray property to PersonaModel
-                let record = Persona(title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
+                Spacer()
                 
-                database.save(record.record) { (savedRecord, error) in
-                    if error == nil {
-                        print("Record Saved")
-                        
-                    } else {
-                        print("Record Not Saved")
-                        print(error)
+                Button("Save") {
+                    
+                    for image in images {
+                        // Convert the UIImage to a CKAsset
+                        let imageData = image.pngData()
+                        let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
+                        try? imageData?.write(to: imageFileURL)
+                        let imageAsset = CKAsset(fileURL: imageFileURL)
+                        imageAssetArray.append(imageAsset)
+                    }
+                    
+                    // TODO: add imageAssetArray property to PersonaModel
+                    let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
+                    
+                    database.save(record.record) { (savedRecord, error) in
+                        if error == nil {
+                            print("Record Saved")
+                            
+                        } else {
+                            print("Record Not Saved")
+                            print(error)
+                        }
                     }
                 }
             }
@@ -146,7 +148,7 @@ struct CreatePersonaView: View {
 }  // Struct
 
 
-struct EditPersonaView_Previews: PreviewProvider {
+struct CreatePersonaView_Previews: PreviewProvider {
     static var previews: some View {
         CreatePersonaView()
     }

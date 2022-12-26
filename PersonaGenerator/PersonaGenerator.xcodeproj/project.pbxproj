@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */; };
+		2B92313A295967DF00DA7F22 /* EditPersonaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B923139295967DF00DA7F22 /* EditPersonaView.swift */; };
+		2B92313C295A387000DA7F22 /* PersonasListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B92313B295A387000DA7F22 /* PersonasListView.swift */; };
 		2BBCEA5729554E2400B5CFE3 /* PersonaGeneratorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5629554E2400B5CFE3 /* PersonaGeneratorApp.swift */; };
 		2BBCEA5929554E2400B5CFE3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5829554E2400B5CFE3 /* ContentView.swift */; };
 		2BBCEA5B29554E2700B5CFE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BBCEA5A29554E2700B5CFE3 /* Assets.xcassets */; };
@@ -20,6 +22,8 @@
 
 /* Begin PBXFileReference section */
 		2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryImagePicker.swift; sourceTree = "<group>"; };
+		2B923139295967DF00DA7F22 /* EditPersonaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPersonaView.swift; sourceTree = "<group>"; };
+		2B92313B295A387000DA7F22 /* PersonasListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonasListView.swift; sourceTree = "<group>"; };
 		2BAEB73729555141009CB2C8 /* PersonaGenerator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PersonaGenerator.entitlements; sourceTree = "<group>"; };
 		2BBCEA5329554E2400B5CFE3 /* PersonaGenerator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PersonaGenerator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BBCEA5629554E2400B5CFE3 /* PersonaGeneratorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaGeneratorApp.swift; sourceTree = "<group>"; };
@@ -47,6 +51,8 @@
 			isa = PBXGroup;
 			children = (
 				2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */,
+				2B92313B295A387000DA7F22 /* PersonasListView.swift */,
+				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
 				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
 				2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */,
@@ -155,8 +161,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2BBCEA6B29554FFA00B5CFE3 /* NetworkSingleton.swift in Sources */,
+				2B92313A295967DF00DA7F22 /* EditPersonaView.swift in Sources */,
 				2BBCEA5929554E2400B5CFE3 /* ContentView.swift in Sources */,
 				2BBCEA5729554E2400B5CFE3 /* PersonaGeneratorApp.swift in Sources */,
+				2B92313C295A387000DA7F22 /* PersonasListView.swift in Sources */,
 				2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */,
 				2BBCEA6929554F6000B5CFE3 /* ImagePicker.swift in Sources */,
 				2BBCEA6729554F1E00B5CFE3 /* PersonaModel.swift in Sources */,
