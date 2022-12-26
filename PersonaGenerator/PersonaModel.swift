@@ -10,6 +10,7 @@ import CloudKit
 
 struct Persona {
     var recordID: CKRecord.ID?
+    let title: String
     let image: UIImage
     let name: String
     let headline: String
@@ -30,6 +31,7 @@ extension Persona {
                 // Create a CKAsset from the file URL
                 let imageAsset = CKAsset(fileURL: fileURL)
         
+        record["title"] = title
         record["image"] = imageAsset
         record["name"] = name
         record["headline"] = headline
