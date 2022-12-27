@@ -9,7 +9,7 @@ import SwiftUI
 import CloudKit
 
 struct Persona: Identifiable {
-    var id: CKRecord.ID
+        var id: CKRecord.ID
         var recordID: CKRecord.ID?
         var title: String
         var image: UIImage

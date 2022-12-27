@@ -17,7 +17,7 @@ struct PersonasListView: View {
     //            NavigationLink(destination: PersonaDetailView(persona: persona)) {
     //                Text(persona.title)
     //            }
-                NavigationLink(destination: Text(persona.name)) {
+                NavigationLink(destination: EditPersonaView(persona: persona)) {
                     Text(persona.title)
                 }
             }
