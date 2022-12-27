@@ -31,7 +31,7 @@ struct CreatePersonaView: View {
     @State private var images: [UIImage] = []
     
     @State private var imageAssetArray: [CKAsset] = []
-    
+        
     // declare database
     let database = CKContainer.default().privateCloudDatabase
     
@@ -41,10 +41,11 @@ struct CreatePersonaView: View {
             
                 Image(uiImage: image!)
                     .resizable()
+                    .foregroundColor(.red)
                     .frame(width: 200, height: 200)
                     .scaledToFit()
                     .clipShape(Circle())
-                    .foregroundColor(.gray)
+                    
                 HStack {
                     Button("Select Image") {
                         sourceType = .photoLibrary
@@ -66,6 +67,7 @@ struct CreatePersonaView: View {
                 .sheet(isPresented: $showingImagePicker) {
                     ImagePicker(image: self.$image, sourcetype: self.$sourceType)
                 }
+                
                 
                 VStack {
                     TextField("Persona title", text: $title)
@@ -92,7 +94,7 @@ struct CreatePersonaView: View {
                             // Show the image picker
                             self.showingGalleryImagePicker = true
                         }) {
-                            Text("Select a photo")
+                            Text("Add images")
                         }.buttonStyle(.borderedProminent)
                         
                         // Display the gallery images
@@ -113,6 +115,7 @@ struct CreatePersonaView: View {
                     }
                     .onAppear {
                         // Set default images in gallery
+                        
                     }
                 }
                 

@@ -13,9 +13,28 @@ struct ManagePersonasListView: View {
     
     var body: some View {
         NavigationView {
-            List(personas) { persona in
-                NavigationLink(destination: EditPersonaView(persona: persona)) {
-                    Text(persona.title)
+            List {
+                ForEach(personas) { persona in
+                    NavigationLink(destination: EditPersonaView(persona: persona)) {
+                        Text(persona.title)
+                    }
+                    .contextMenu {
+                        Button(action: {
+                            // Delete the record from CloudKit
+                            let privateDatabase = CKContainer.default().privateCloudDatabase
+                            privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
+                                if let error = error {
+                                    // Handle error
+                                } else {
+                                    // Remove the deleted record from the `personas` array
+                                    self.personas.removeAll(where: { $0.recordID == recordID })
+                                }
+                            }
+                        }) {
+                            Text("Delete")
+                            Image(systemName: "trash")
+                        }
+                    }
                 }
             }
             .navigationTitle("Manage Personas")
@@ -50,6 +69,7 @@ struct ManagePersonasListView: View {
         }
     }
 }
+
 
 
 struct PersonasListView_Previews: PreviewProvider {
