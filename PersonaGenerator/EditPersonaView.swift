@@ -1,7 +1,10 @@
 import SwiftUI
 import CloudKit
 
+
+
 struct EditPersonaView: View {
+    
     @State var persona: Persona
     
     @State private var showingImagePicker = false
@@ -10,7 +13,7 @@ struct EditPersonaView: View {
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
     
     let networkSingleton = NetworkSingleton()
-
+    
     @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
     
     @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
@@ -75,24 +78,37 @@ struct EditPersonaView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     TextField("Phone", text: $phone)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                    ScrollView(.horizontal) {
+                    
+                    VStack {
                         HStack {
-                            ForEach(images, id: \.self) { image in
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 150, height: 150)
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    ForEach(images, id: \.self) { image in
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .frame(width: 300, height: 200)
+                                            .aspectRatio(contentMode: .fill)
+                                            .clipped()
+                                    }
+                                }
                             }
                         }
+                        Button("Edit Gallery") {
+                            showingGalleryImagePicker = true
+                        }.buttonStyle(.borderedProminent)
                     }
+                    .sheet(isPresented: $showingGalleryImagePicker) {
+                        PhotoPicker(images: $images)
+                    }
+                    
                     if error != nil {
                         Text(error!)
                             .foregroundColor(.red)
                     }
                     Button(action: updatePersona) {
                         Text("Update Persona")
-                    }
-                    .disabled(isUpdating)
+                    }.buttonStyle(.borderedProminent)
+                        .disabled(isUpdating)
                 }
                 .padding()
                 .onAppear {
@@ -109,7 +125,7 @@ struct EditPersonaView: View {
                     }
                 }
             }
-        }
+        }.navigationTitle("Edit Persona")
     }
     
     
@@ -118,16 +134,6 @@ struct EditPersonaView: View {
     func updatePersona() {
         isUpdating = true
         error = nil
-        
-        // Update the persona object
-        
-//        let imageAssets = images.map { image in
-//            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("image.png")
-//            if let imageData = image.pngData() {
-//                try? imageData.write(to: fileURL)
-//            }
-//            return CKAsset(fileURL: fileURL)
-//        }
         
         for image in images {
             // Convert the UIImage to a CKAsset
@@ -147,7 +153,6 @@ struct EditPersonaView: View {
         }
         
         
-
         // Retrieve the existing record from CloudKit
         let privateDatabase = CKContainer.default().privateCloudDatabase
         let recordID = persona.recordID
@@ -157,13 +162,13 @@ struct EditPersonaView: View {
                 self.isUpdating = false
                 return
             }
-
+            
             guard let record = record else {
                 self.error = "Failed to retrieve record"
                 self.isUpdating = false
                 return
             }
-
+            
             // Modify the record's properties
             record["images"] = imageAssetArray
             record["image"] = imageAsset
@@ -174,15 +179,7 @@ struct EditPersonaView: View {
             record["birthdate"] = self.birthdate as CKRecordValue
             record["email"] = self.email as CKRecordValue
             record["phone"] = self.phone as CKRecordValue
-            record["images"] = self.images.map { image in
-                let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("image.png")
-                if let imageData = image.pngData() {
-                    try? imageData.write(to: fileURL)
-                }
-                return CKAsset(fileURL: fileURL)
-            } as CKRecordValue
-
-            // Save the modified record to CloudKit
+            
             privateDatabase.save(record) { (savedRecord, error) in
                 self.isUpdating = false
                 if let error = error {
@@ -193,10 +190,7 @@ struct EditPersonaView: View {
             }
         }
     }
-
-    
     // MARK: //UPDATE PERSONA
-    
 }
 
 

@@ -8,26 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
+    
     var body: some View {
         TabView {
             // The content for the first tab
             VStack {
                 // Your content for the first tab goes here
-                PersonasListView()
+                ManagePersonasListView()
             }
             .tabItem {
                 Image(systemName: "circle.fill")
-                Text("List")
+                Text("Manage Personas")
             }
 
             // The content for the second tab
             VStack {
                 // Your content for the second tab goes here
-                Text("This is the content for the second tab (Bar)")
+                PreviewPersonasListView()
             }
             .tabItem {
                 Image(systemName: "circle.fill")
-                Text("Bar")
+                Text("Preview Personas")
             }
 
             // The content for the third tab

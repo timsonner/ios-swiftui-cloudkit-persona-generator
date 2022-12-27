@@ -1,5 +1,5 @@
 //
-//  GalleryImagePicker.swift
+//  ImagePicker.swift
 //  Persona Generator
 //
 //  Created by Timothy Sonner on 12/21/22.
@@ -10,7 +10,7 @@ import SwiftUI
 struct GalleryImagePicker: UIViewControllerRepresentable {
     @Binding var images: [UIImage]
     @Binding var showPicker: Bool
-    
+    @Environment(\.presentationMode) var presentationMode
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         var parent: GalleryImagePicker
         
@@ -22,7 +22,7 @@ struct GalleryImagePicker: UIViewControllerRepresentable {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.images.append(uiImage)
             }
-            
+            parent.presentationMode.wrappedValue.dismiss()
             parent.showPicker = false
         }
     }

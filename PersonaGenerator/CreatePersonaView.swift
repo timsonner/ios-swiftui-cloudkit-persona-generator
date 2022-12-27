@@ -36,32 +36,32 @@ struct CreatePersonaView: View {
     let database = CKContainer.default().privateCloudDatabase
     
     var body: some View {
+        VStack {
         ScrollView(showsIndicators: false) {
-            VStack {
-                    Text("Create Persona")
-                    Image(uiImage: image!)
-                        .resizable()
-                        .frame(width: 200, height: 200)
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .foregroundColor(.gray)
-                    HStack {
-                        Button("Select Image") {
-                            sourceType = .photoLibrary
+            
+                Image(uiImage: image!)
+                    .resizable()
+                    .frame(width: 200, height: 200)
+                    .scaledToFit()
+                    .clipShape(Circle())
+                    .foregroundColor(.gray)
+                HStack {
+                    Button("Select Image") {
+                        sourceType = .photoLibrary
+                        self.showingImagePicker = true
+                    }
+                    Button("Take Photo") {
+                        sourceType = .camera
+                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
                             self.showingImagePicker = true
+                        } else {
+                            print("Camera not available")
+                            // Show an error message or take some other action
                         }
-                        Button("Take Photo") {
-                            sourceType = .camera
-                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                                self.showingImagePicker = true
-                            } else {
-                                print("Camera not available")
-                                // Show an error message or take some other action
-                            }
-                        }
-                        Button("Generate Random") {
-                            image = networkSingleton.fetchImage()
-                        }
+                    }
+                    Button("Generate Random") {
+                        image = networkSingleton.fetchImage()
+                    }
                 }
                 .sheet(isPresented: $showingImagePicker) {
                     ImagePicker(image: self.$image, sourcetype: self.$sourceType)
@@ -93,7 +93,7 @@ struct CreatePersonaView: View {
                             self.showingGalleryImagePicker = true
                         }) {
                             Text("Select a photo")
-                        }
+                        }.buttonStyle(.borderedProminent)
                         
                         // Display the gallery images
                         ScrollView(.horizontal) {
@@ -101,9 +101,9 @@ struct CreatePersonaView: View {
                                 ForEach(images, id: \.self) { image in
                                     Image(uiImage: image)
                                         .resizable()
-                                                                .frame(width: 300, height: 200)
-                                                                .aspectRatio(contentMode: .fill)
-                                                                .clipped()
+                                        .frame(width: 300, height: 200)
+                                        .aspectRatio(contentMode: .fill)
+                                        .clipped()
                                 }
                             }
                         }
@@ -141,9 +141,9 @@ struct CreatePersonaView: View {
                             print(error)
                         }
                     }
-                }
+                }.buttonStyle(.borderedProminent)
             }
-        } // Some View
+        }// Some View
     } // Body
 }  // Struct
 
