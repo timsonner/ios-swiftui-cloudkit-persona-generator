@@ -3,7 +3,21 @@ import CloudKit
 
 struct EditPersonaView: View {
     @State var persona: Persona
-//    @State private var image: UIImage
+    
+    @State private var showingImagePicker = false
+    @State private var showingGalleryImagePicker = false
+    
+    @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
+    
+    let networkSingleton = NetworkSingleton()
+
+    @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
+    
+    @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
+    
+    @State private var imageAssetArray: [CKAsset] = []
+    
+    @State private var title: String = ""
     @State private var name: String = ""
     @State private var headline: String = ""
     @State private var bio: String = ""
@@ -18,58 +32,87 @@ struct EditPersonaView: View {
         
         ScrollView(showsIndicators: false) {
             VStack {
-                Image(uiImage: persona.image)
+                Image(uiImage: image!)
                     .resizable()
                     .frame(width: 200, height: 200)
                     .scaledToFit()
                     .clipShape(Circle())
-                TextField("Name", text: $name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Headline", text: $headline)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Bio", text: $bio)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                DatePicker(selection: $birthdate, displayedComponents: .date) {
-                    Text("Birthday")
-                }
-                TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Phone", text: $phone)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(images, id: \.self) { image in
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 150, height: 150)
+                
+                HStack {
+                    Button("Select Image") {
+                        sourceType = .photoLibrary
+                        self.showingImagePicker = true
+                    }
+                    Button("Take Photo") {
+                        sourceType = .camera
+                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                            self.showingImagePicker = true
+                        } else {
+                            print("Camera not available")
+                            // Show an error message or take some other action
                         }
                     }
+                    Button("Generate Random") {
+                        self.image = networkSingleton.fetchImage()
+                    }
                 }
-                if error != nil {
-                    Text(error!)
-                        .foregroundColor(.red)
+                .sheet(isPresented: $showingImagePicker) {
+                    ImagePicker(image: self.$image, sourcetype: self.$sourceType)
                 }
-                Button(action: updatePersona) {
-                    Text("Update Persona")
+                VStack {
+                    TextField("Title", text: $title)
+                        .textFieldStyle(.roundedBorder)
+                    TextField("Name", text: $name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Headline", text: $headline)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Bio", text: $bio)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    DatePicker(selection: $birthdate, displayedComponents: .date) {
+                        Text("Birthday")
+                    }
+                    TextField("Email", text: $email)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Phone", text: $phone)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(images, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 150, height: 150)
+                            }
+                        }
+                    }
+                    if error != nil {
+                        Text(error!)
+                            .foregroundColor(.red)
+                    }
+                    Button(action: updatePersona) {
+                        Text("Update Persona")
+                    }
+                    .disabled(isUpdating)
                 }
-                .disabled(isUpdating)
-            }
-            .padding()
-            .onAppear {
-//                self.image = self.persona.image
-                self.name = self.persona.name
-                self.headline = self.persona.headline
-                self.bio = self.persona.bio
-                self.birthdate = self.persona.birthdate
-                self.email = self.persona.email
-                self.phone = self.persona.phone
-                self.images = self.persona.images.compactMap { image in
-                    return UIImage(contentsOfFile: image.fileURL!.path)
+                .padding()
+                .onAppear {
+                    self.title = self.persona.title
+                    self.image = self.persona.image
+                    self.name = self.persona.name
+                    self.headline = self.persona.headline
+                    self.bio = self.persona.bio
+                    self.birthdate = self.persona.birthdate
+                    self.email = self.persona.email
+                    self.phone = self.persona.phone
+                    self.images = self.persona.images.compactMap { image in
+                        return UIImage(contentsOfFile: image.fileURL!.path)
+                    }
                 }
             }
         }
     }
+    
+    
     // MARK: UPDATE PERSONA
     
     func updatePersona() {
@@ -77,20 +120,33 @@ struct EditPersonaView: View {
         error = nil
         
         // Update the persona object
-//        persona.image = image
-        persona.name = name
-        persona.headline = headline
-        persona.bio = bio
-        persona.birthdate = birthdate
-        persona.email = email
-        persona.phone = phone
-        persona.images = images.map { image in
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("image.png")
-            if let imageData = image.pngData() {
-                try? imageData.write(to: fileURL)
-            }
-            return CKAsset(fileURL: fileURL)
+        
+//        let imageAssets = images.map { image in
+//            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent("image.png")
+//            if let imageData = image.pngData() {
+//                try? imageData.write(to: fileURL)
+//            }
+//            return CKAsset(fileURL: fileURL)
+//        }
+        
+        for image in images {
+            // Convert the UIImage to a CKAsset
+            let imageData = image.pngData()
+            let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
+            try? imageData?.write(to: imageFileURL)
+            let imageAsset = CKAsset(fileURL: imageFileURL)
+            imageAssetArray.append(imageAsset)
         }
+        
+        var imageAsset: CKAsset {
+            // Convert the UIImage to a CKAsset
+            let imageData = image!.pngData()
+            let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
+            try? imageData?.write(to: imageFileURL)
+            return CKAsset(fileURL: imageFileURL)
+        }
+        
+        
 
         // Retrieve the existing record from CloudKit
         let privateDatabase = CKContainer.default().privateCloudDatabase
@@ -109,6 +165,9 @@ struct EditPersonaView: View {
             }
 
             // Modify the record's properties
+            record["images"] = imageAssetArray
+            record["image"] = imageAsset
+            record["title"] = self.title
             record["name"] = self.name as CKRecordValue
             record["headline"] = self.headline as CKRecordValue
             record["bio"] = self.bio as CKRecordValue
