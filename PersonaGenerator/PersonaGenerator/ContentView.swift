@@ -11,9 +11,8 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            // The content for the first tab
+            // First tab.
             VStack {
-                // Your content for the first tab goes here
                 ManagePersonasListView()
             }
             .tabItem {
@@ -21,9 +20,8 @@ struct ContentView: View {
                 Text("Manage Personas")
             }
 
-            // The content for the second tab
+            // Second tab.
             VStack {
-                // Your content for the second tab goes here
                 PreviewPersonasListView()
             }
             .tabItem {
@@ -31,7 +29,7 @@ struct ContentView: View {
                 Text("Preview Personas")
             }
 
-            // The content for the third tab
+            // Third tab.
             VStack {
                 CreatePersonaView()
             }

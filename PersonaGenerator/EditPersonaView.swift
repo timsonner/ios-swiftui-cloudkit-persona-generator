@@ -136,22 +136,10 @@ struct EditPersonaView: View {
         error = nil
         
         for image in images {
-            // Convert the UIImage to a CKAsset
-            let imageData = image.pngData()
-            let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
-            try? imageData?.write(to: imageFileURL)
-            let imageAsset = CKAsset(fileURL: imageFileURL)
-            imageAssetArray.append(imageAsset)
+            imageAssetArray.append(image.convertToCKAsset()!)
         }
         
-        var imageAsset: CKAsset {
-            // Convert the UIImage to a CKAsset
-            let imageData = image!.pngData()
-            let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
-            try? imageData?.write(to: imageFileURL)
-            return CKAsset(fileURL: imageFileURL)
-        }
-        
+        let imageAsset = image?.convertToCKAsset()
         
         // Retrieve the existing record from CloudKit
         let privateDatabase = CKContainer.default().privateCloudDatabase

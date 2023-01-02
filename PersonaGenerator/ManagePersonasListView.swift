@@ -9,6 +9,8 @@ import SwiftUI
 import CloudKit
 
 struct ManagePersonasListView: View {
+    
+    
     @State private var personas: [Persona] = []
     
     var body: some View {
@@ -23,7 +25,7 @@ struct ManagePersonasListView: View {
                             // Delete the record from CloudKit
                             let privateDatabase = CKContainer.default().privateCloudDatabase
                             privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
-                                if let error = error {
+                                if error != nil {
                                     // Handle error
                                 } else {
                                     // Remove the deleted record from the `personas` array
@@ -43,7 +45,7 @@ struct ManagePersonasListView: View {
                 let privateDatabase = CKContainer.default().privateCloudDatabase
                 let query = CKQuery(recordType: "Persona", predicate: NSPredicate(value: true))
                 privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
-                    if let error = error {
+                    if error != nil {
                         // Handle error
                     } else {
                         self.personas = records!.compactMap { record in

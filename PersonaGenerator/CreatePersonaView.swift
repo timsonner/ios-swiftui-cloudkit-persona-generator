@@ -124,15 +124,9 @@ struct CreatePersonaView: View {
                 Button("Save") {
                     
                     for image in images {
-                        // Convert the UIImage to a CKAsset
-                        let imageData = image.pngData()
-                        let imageFileURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("png")
-                        try? imageData?.write(to: imageFileURL)
-                        let imageAsset = CKAsset(fileURL: imageFileURL)
-                        imageAssetArray.append(imageAsset)
+                        imageAssetArray.append(image.convertToCKAsset()!)
                     }
                     
-                    // TODO: add imageAssetArray property to PersonaModel
                     let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
                     
                     database.save(record.record) { (savedRecord, error) in
