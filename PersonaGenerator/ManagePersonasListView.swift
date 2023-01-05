@@ -17,17 +17,20 @@ struct ManagePersonasListView: View {
             List {
                 ForEach(viewModel.personas) { persona in
                     NavigationLink(destination: EditPersonaView(persona: persona)) {
-                        Text(persona.title)
+                        PersonaListRowView(item: persona)
                     }
                     .contextMenu {
                         Button(action: {
                             // Delete the record from CloudKit
-                            viewModel.deletePersona(persona: persona)
+                            DispatchQueue.main.async {
+                                viewModel.deletePersona(persona: persona)
+                            }
                         }) {
                             Text("Delete")
                             Image(systemName: "trash")
                         }
                     }
+
                 }
             }
             .navigationTitle("Manage Personas")

@@ -23,6 +23,7 @@
 		2BBCEA6929554F6000B5CFE3 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */; };
 		2BBCEA6B29554FFA00B5CFE3 /* NetworkSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBCEA6A29554FFA00B5CFE3 /* NetworkSingleton.swift */; };
 		2BCE608129667F0A008D2453 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE608029667F0A008D2453 /* ViewModel.swift */; };
+		2BCE609F2966A4D1008D2453 /* PersonaListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		2BBCEA6A29554FFA00B5CFE3 /* NetworkSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSingleton.swift; sourceTree = "<group>"; };
 		2BCE608029667F0A008D2453 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaListRowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				2BCE608029667F0A008D2453 /* ViewModel.swift */,
 				2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */,
 				2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */,
+				2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */,
 				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
 				2B923141295AD99100DA7F22 /* PhotoPicker.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
@@ -186,6 +189,7 @@
 				2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */,
 				2B923142295AD99100DA7F22 /* PhotoPicker.swift in Sources */,
 				2B923144295AE8A800DA7F22 /* ExtendClasses.swift in Sources */,
+				2BCE609F2966A4D1008D2453 /* PersonaListRowView.swift in Sources */,
 				2BBCEA6929554F6000B5CFE3 /* ImagePicker.swift in Sources */,
 				2BBCEA6729554F1E00B5CFE3 /* PersonaModel.swift in Sources */,
 				2BBCEA6529554E9300B5CFE3 /* CreatePersonaView.swift in Sources */,
