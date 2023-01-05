@@ -12,12 +12,10 @@ struct EditPersonaView: View {
     
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
     
-    let networkSingleton = NetworkSingleton()
+//    let networkSingleton = NetworkSingleton()
     
     @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
-    
-    @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
-    
+        
     @State private var imageAssetArray: [CKAsset] = []
     
     @State private var title: String = ""
@@ -56,7 +54,7 @@ struct EditPersonaView: View {
                         }
                     }
                     Button("Generate Random") {
-                        self.image = networkSingleton.fetchImage()
+                        self.image = NetworkSingleton.shared.fetchImage()
                     }
                 }
                 .sheet(isPresented: $showingImagePicker) {

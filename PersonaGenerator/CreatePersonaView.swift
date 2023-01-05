@@ -14,12 +14,12 @@ struct CreatePersonaView: View {
     @State private var showingGalleryImagePicker = false
     
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
-    let networkSingleton = NetworkSingleton()
+//    let networkSingleton = NetworkSingleton()
     
     // User data variables
     @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
     
-    @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
+//    @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
     
     @State private var title: String = ""
     @State private var name: String = ""
@@ -61,7 +61,7 @@ struct CreatePersonaView: View {
                         }
                     }
                     Button("Generate Random") {
-                        image = networkSingleton.fetchImage()
+                        image = NetworkSingleton.shared.fetchImage()
                     }
                 }
                 .sheet(isPresented: $showingImagePicker) {
@@ -135,7 +135,7 @@ struct CreatePersonaView: View {
                             
                         } else {
                             print("Record Not Saved")
-                            print(error)
+                            print(error as Any)
                         }
                     }
                 }.buttonStyle(.borderedProminent)
