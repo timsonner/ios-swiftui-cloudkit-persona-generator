@@ -12,6 +12,7 @@ class NetworkSingleton {
     static var shared = NetworkSingleton()
     
     func fetchImage() -> UIImage {
+        
         var image: UIImage = UIImage(systemName: "person")!
             let url = URL(string: "https://thispersondoesnotexist.com/image")!
                 if let data = try? Data(contentsOf: url) {
@@ -19,4 +20,5 @@ class NetworkSingleton {
                     }
         return image
             }
+    
         }
