@@ -8,28 +8,28 @@
 import SwiftUI
 import CloudKit
 
+
 struct ManagePersonasListView: View {
     
     @ObservedObject var viewModel = ViewModel()
-    
+    @State private var isEditPersonaViewPresented = false
     @State private var isCreatePersonaViewPresented = false
+    @State private var selectedPersona: Persona?
     
     var body: some View {
         NavigationView {
             List {
                 ForEach(viewModel.personas) { persona in
-                    NavigationLink(destination: EditPersonaView(persona: persona)) {
+                    NavigationLink(destination: PersonaDetailView(persona: persona)) {
                         PersonaListRowView(item: persona)
                     }
                     .contextMenu {
                         Button(action: {
-                            // Delete the record from CloudKit
-                            DispatchQueue.main.async {
-                                viewModel.deletePersona(persona: persona)
-                            }
+                            selectedPersona = persona
+                            isEditPersonaViewPresented = true
                         }) {
-                            Text("Delete")
-                            Image(systemName: "trash")
+                            Text("Edit")
+                            Image(systemName: "pencil")
                         }
                     }
                 }
@@ -39,6 +39,7 @@ struct ManagePersonasListView: View {
                 EditButton()
             }
             .navigationTitle("Manage Personas")
+            .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(leading: Button(action: {
                 // Set the `isCreatePersonaViewPresented` state to true to present the `CreatePersonaView`
                 isCreatePersonaViewPresented = true
@@ -48,6 +49,11 @@ struct ManagePersonasListView: View {
             })
             .sheet(isPresented: $isCreatePersonaViewPresented) {
                 CreatePersonaView()
+            }
+            .sheet(isPresented: $isEditPersonaViewPresented) {
+                if let persona = selectedPersona {
+                    EditPersonaView(persona: persona)
+                }
             }
             .task {
                 // Fetch data from CloudKit here
@@ -60,13 +66,13 @@ struct ManagePersonasListView: View {
         withAnimation {
             // Delete the persona from the `personas` array
             viewModel.personas.remove(atOffsets: offsets)
-
+            
             // Get the index of the persona to delete
             let index = offsets.first!
-
+            
             // Get the persona to delete
             let persona = viewModel.personas[index]
-
+            
             // Delete the persona from CloudKit
             viewModel.deletePersona(persona: persona)
         }

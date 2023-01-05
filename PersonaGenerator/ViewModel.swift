@@ -41,10 +41,9 @@ class ViewModel: ObservableObject {
                         return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
                     }
                 }
-                
             }
         }
-        print(personas)
+        print("Personas fetched")
     }
     
     func deletePersona(persona: Persona) {
@@ -58,5 +57,4 @@ class ViewModel: ObservableObject {
             }
         }
     }
-    
 }

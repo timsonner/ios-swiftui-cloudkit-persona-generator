@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PersonaDetailView: View {
     var persona: Persona
-
+    @State private var isEditPersonaViewPresented = false
     var body: some View {
         Form {
             Section {
@@ -19,33 +19,33 @@ struct PersonaDetailView: View {
                     .frame(height: 300)
                     .clipped()
             }
-
+            
             Section {
                 VStack(alignment: .leading) {
                     Text(persona.name)
                         .font(.title)
-
+                    
                     Text(persona.headline)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
             }
-
+            
             Section {
                 VStack(alignment: .leading) {
                     Text("Bio")
                         .font(.headline)
-
+                    
                     Text(persona.bio)
                         .padding()
                 }
             }
-
+            
             Section {
                 VStack(alignment: .leading) {
                     Text("Contact Information")
                         .font(.headline)
-
+                    
                     HStack {
                         Text("Email:")
                             .font(.subheadline)
@@ -53,7 +53,7 @@ struct PersonaDetailView: View {
                         Text(persona.email)
                             .font(.subheadline)
                     }
-
+                    
                     HStack {
                         Text("Phone:")
                             .font(.subheadline)
@@ -63,12 +63,11 @@ struct PersonaDetailView: View {
                     }
                 }
             }
-
             Section {
                 VStack(alignment: .leading) {
                     Text("Images")
                         .font(.headline)
-
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 16) {
                             ForEach(persona.images, id: \.self) { image in
@@ -82,6 +81,15 @@ struct PersonaDetailView: View {
                     }
                 }
             }
+        }
+        .navigationBarItems(trailing: Button(action: {
+            // Navigate to the EditPersonaView
+            isEditPersonaViewPresented = true
+        }) {
+            Text("Edit")
+        })
+        .sheet(isPresented: $isEditPersonaViewPresented) {
+            EditPersonaView(persona: persona)
         }
     }
 }

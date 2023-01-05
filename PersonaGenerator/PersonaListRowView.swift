@@ -21,9 +21,11 @@ struct PersonaListRowView: View {
                     Text(item.title)
                         .font(.title)
                     Text(item.name)
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    Text(item.headline)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
                 }
             }
         }
