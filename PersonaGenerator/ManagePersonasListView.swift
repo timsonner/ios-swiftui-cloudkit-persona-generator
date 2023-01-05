@@ -22,15 +22,7 @@ struct ManagePersonasListView: View {
                     .contextMenu {
                         Button(action: {
                             // Delete the record from CloudKit
-                            let privateDatabase = CKContainer.default().privateCloudDatabase
-                            privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
-                                if error != nil {
-                                    // Handle error
-                                } else {
-                                    // Remove the deleted record from the `personas` array
-                                    viewModel.personas.removeAll(where: { $0.recordID == recordID })
-                                }
-                            }
+                            viewModel.deletePersona(persona: persona)
                         }) {
                             Text("Delete")
                             Image(systemName: "trash")

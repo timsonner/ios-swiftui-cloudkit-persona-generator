@@ -46,4 +46,17 @@ class ViewModel: ObservableObject {
         }
         print(personas)
     }
+    
+    func deletePersona(persona: Persona) {
+        let privateDatabase = CKContainer.default().privateCloudDatabase
+        privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
+            if error != nil {
+                // Handle error
+            } else {
+                // Remove the deleted record from the `personas` array
+                self.personas.removeAll(where: { $0.recordID == recordID })
+            }
+        }
+    }
+    
 }
