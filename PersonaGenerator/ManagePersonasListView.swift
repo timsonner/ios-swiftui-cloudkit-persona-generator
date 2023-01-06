@@ -12,7 +12,6 @@ import CloudKit
 struct ManagePersonasListView: View {
     
     @ObservedObject var viewModel = ViewModel()
-    @State private var isEditPersonaViewPresented = false
     @State private var isCreatePersonaViewPresented = false
     @State private var selectedPersona: Persona?
     
@@ -20,22 +19,23 @@ struct ManagePersonasListView: View {
         NavigationView {
             List {
                 ForEach(viewModel.personas) { persona in
+                    // ZStack hack to hide NavigationLink indicators.
                     ZStack(alignment: .leading) {
                         NavigationLink(destination: PersonaDetailView(persona: persona)) {
-                            EmptyView()
-                        }.hidden()
+                        }
+                        .hidden() // End hack.
+                        
                         PersonaListRowView(item: persona)
                             .contextMenu {
                                 Button(action: {
                                     selectedPersona = persona
-                                    isEditPersonaViewPresented = true
                                 }) {
                                     Text("Edit")
                                     Image(systemName: "pencil")
                                 }
-                            }
-                    }
-                }
+                            } // .contextMenu
+                    } // ZStack
+                } // End ForEach
                 .onDelete(perform: deletePersona)
             }
             .toolbar {
@@ -53,10 +53,8 @@ struct ManagePersonasListView: View {
             .sheet(isPresented: $isCreatePersonaViewPresented) {
                 CreatePersonaView()
             }
-            .sheet(isPresented: $isEditPersonaViewPresented) {
-                if let persona = selectedPersona {
-                    EditPersonaView(persona: persona)
-                }
+            .sheet(item: $selectedPersona) { persona in
+            EditPersonaView(persona: persona)
             }
             .task {
                 // Fetch data from CloudKit here

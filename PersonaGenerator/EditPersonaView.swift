@@ -6,7 +6,6 @@ import CloudKit
 struct EditPersonaView: View {
     
     @State var persona: Persona
-    
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     
