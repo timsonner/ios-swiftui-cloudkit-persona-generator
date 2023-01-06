@@ -48,7 +48,7 @@ struct ManagePersonasListView: View {
                 Image(systemName: "plus")
             })
             .sheet(isPresented: $isCreatePersonaViewPresented) {
-                CreatePersonaView()
+                EditPersonaView(isNew: true)
             }
             .sheet(item: $selectedPersona) { persona in
             EditPersonaView(persona: persona)
@@ -64,7 +64,6 @@ struct ManagePersonasListView: View {
         withAnimation {
             // Get the index of the persona to delete.
             let index = offsets.first!
-            print("offset \(index)")
             // Get the persona to delete.
             let persona = viewModel.personas[index]
             // Delete the persona from CloudKit.

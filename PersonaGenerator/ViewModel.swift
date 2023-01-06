@@ -49,13 +49,9 @@ class ViewModel: ObservableObject {
                 print(error)
             }
         }
-        print("Personas fetched")
-        
-        
     }
     
     func deletePersona(persona: Persona) {
-        let privateDatabase = CKContainer.default().privateCloudDatabase
         privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
             if error != nil {
                 // Handle error
@@ -106,11 +102,24 @@ class ViewModel: ObservableObject {
                 if let error = error {
                     print(error)
                 } else {
-                    self.persona?.recordID = savedRecord?.recordID
+                    DispatchQueue.main.async {
+                        self.persona?.recordID = savedRecord?.recordID
+                    }
                 }
             }
         }
     }
-
+    
+    func createPersona(record: Persona) {
+        privateDatabase.save(record.record) { (savedRecord, error) in
+            if error == nil {
+                print("Record Saved")
+                
+            } else {
+                print("Record Not Saved")
+                print(error as Any)
+            }
+        }
+    }
 
 }

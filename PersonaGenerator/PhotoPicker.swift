@@ -16,9 +16,6 @@ struct PhotoPicker: View {
     
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
     
-    
-    let networkSingleton = NetworkSingleton()
-    
     var body: some View {
         VStack {
             ScrollView(showsIndicators: false) {
@@ -56,7 +53,7 @@ struct PhotoPicker: View {
                         }
                     }
                     Button("Generate Random") {
-                        images.append( networkSingleton.fetchImage())
+                        images.append(NetworkSingleton.shared.fetchImage())
                     }
                 }
                 .sheet(isPresented: $showingGalleryImagePicker) {
@@ -66,9 +63,3 @@ struct PhotoPicker: View {
         }
     }
 }
-
-//struct PhotoPicker_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PhotoPicker()
-//    }
-//}

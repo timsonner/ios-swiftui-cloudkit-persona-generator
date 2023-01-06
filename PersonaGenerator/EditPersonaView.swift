@@ -5,7 +5,9 @@ import CloudKit
 
 struct EditPersonaView: View {
     @ObservedObject var viewModel = ViewModel()
-    @State var persona: Persona
+    @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [])
+    
+    @State var isNew = false
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     
@@ -100,8 +102,14 @@ struct EditPersonaView: View {
                         Text(error!)
                             .foregroundColor(.red)
                     }
-                    Button(action: updatePersona) {
-                        Text("Update Persona")
+                    // MARK: Button create/update persona
+                    Button("Update Persona") {
+                        if isNew {
+                            createPersona()
+                        } else {
+                            updatePersona()
+                        }
+                        print(persona)
                     }.buttonStyle(.borderedProminent)
                         .disabled(isUpdating)
                 }
@@ -123,10 +131,19 @@ struct EditPersonaView: View {
         }.navigationTitle("Edit Persona")
     }
     
-    
+    // MARK: Helper functions
     func updatePersona() {
-        viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID ?? CKRecord.ID())
+        viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!)
     }
     
+    func createPersona() {
+        for image in images {
+            imageAssetArray.append(image.convertToCKAsset()!)
+        }
+        
+        let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
+        
+        viewModel.createPersona(record: record)
+    }
 }
 
