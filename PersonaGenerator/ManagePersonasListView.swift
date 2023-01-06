@@ -20,18 +20,16 @@ struct ManagePersonasListView: View {
         NavigationView {
             List {
                 ForEach(viewModel.personas) { persona in
-                    NavigationLink(destination: PersonaDetailView(persona: persona)) {
-                        PersonaListRowView(item: persona)
-                    }
-                    .contextMenu {
-                        Button(action: {
-                            selectedPersona = persona
-                            isEditPersonaViewPresented = true
-                        }) {
-                            Text("Edit")
-                            Image(systemName: "pencil")
+                    PersonaListRowView(item: persona)
+                        .contextMenu {
+                            Button(action: {
+                                selectedPersona = persona
+                                isEditPersonaViewPresented = true
+                            }) {
+                                Text("Edit")
+                                Image(systemName: "pencil")
+                            }
                         }
-                    }
                 }
                 .onDelete(perform: deletePersona)
             }
@@ -41,7 +39,7 @@ struct ManagePersonasListView: View {
             .navigationTitle("Manage Personas")
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(leading: Button(action: {
-                // Set the `isCreatePersonaViewPresented` state to true to present the `CreatePersonaView`
+                // Present the CreatePersonaView.
                 isCreatePersonaViewPresented = true
             }) {
                 Text("Add Persona")
@@ -64,21 +62,18 @@ struct ManagePersonasListView: View {
     
     func deletePersona(offsets: IndexSet) {
         withAnimation {
-            // Delete the persona from the `personas` array
-            viewModel.personas.remove(atOffsets: offsets)
-            
-            // Get the index of the persona to delete
+            // Get the index of the persona to delete.
             let index = offsets.first!
-            
-            // Get the persona to delete
+            print("offset \(index)")
+            // Get the persona to delete.
             let persona = viewModel.personas[index]
-            
-            // Delete the persona from CloudKit
-            viewModel.deletePersona(persona: persona)
+            // Delete the persona from CloudKit.
+            DispatchQueue.main.async {
+                viewModel.deletePersona(persona: persona)
+            }
         }
     }
 }
-
 
 struct PersonasListView_Previews: PreviewProvider {
     static var previews: some View {

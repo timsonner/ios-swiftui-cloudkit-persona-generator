@@ -29,6 +29,7 @@ struct PersonaListRowView: View {
                 }
             }
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
