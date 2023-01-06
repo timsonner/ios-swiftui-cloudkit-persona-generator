@@ -13,6 +13,7 @@ class ViewModel: ObservableObject {
     private let privateDatabase = CKContainer.default().privateCloudDatabase
     
     @Published var personas: [Persona] = []
+    @Published var persona: Persona?
     
     func fetchPersonas() {
         // Fetch data from CloudKit here
@@ -65,5 +66,51 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    
+    func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID) {
+        
+        var imageAssetArray: [CKAsset] = []
+        
+        for image in images {
+            imageAssetArray.append(image.convertToCKAsset()!)
+        }
+        
+        let imageAsset = image?.convertToCKAsset()
+        
+        // Retrieve the existing record from CloudKit
+        let privateDatabase = CKContainer.default().privateCloudDatabase
+        let recordID = recordID
+        privateDatabase.fetch(withRecordID: recordID) { (record, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            guard let record = record else {
+                print("Error creating record")
+                return
+            }
+            
+            // Modify the record's properties
+            record["images"] = imageAssetArray
+            record["image"] = imageAsset
+            record["title"] = title
+            record["name"] = name as CKRecordValue
+            record["headline"] = headline as CKRecordValue
+            record["bio"] = bio as CKRecordValue
+            record["birthdate"] = birthdate as CKRecordValue
+            record["email"] = email as CKRecordValue
+            record["phone"] = phone as CKRecordValue
+            
+            privateDatabase.save(record) { (savedRecord, error) in
+                if let error = error {
+                    print(error)
+                } else {
+                    self.persona?.recordID = savedRecord?.recordID
+                }
+            }
+        }
+    }
+
 
 }

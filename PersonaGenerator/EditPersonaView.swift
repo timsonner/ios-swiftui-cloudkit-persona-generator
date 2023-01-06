@@ -4,17 +4,15 @@ import CloudKit
 
 
 struct EditPersonaView: View {
-    
+    @ObservedObject var viewModel = ViewModel()
     @State var persona: Persona
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     
     @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
-    
-//    let networkSingleton = NetworkSingleton()
-    
-    @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
         
+    @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
+    
     @State private var imageAssetArray: [CKAsset] = []
     
     @State private var title: String = ""
@@ -126,63 +124,9 @@ struct EditPersonaView: View {
     }
     
     
-    // MARK: UPDATE PERSONA
-    
     func updatePersona() {
-        isUpdating = true
-        error = nil
-        
-        for image in images {
-            imageAssetArray.append(image.convertToCKAsset()!)
-        }
-        
-        let imageAsset = image?.convertToCKAsset()
-        
-        // Retrieve the existing record from CloudKit
-        let privateDatabase = CKContainer.default().privateCloudDatabase
-        let recordID = persona.recordID
-        privateDatabase.fetch(withRecordID: recordID!) { (record, error) in
-            if let error = error {
-                self.error = error.localizedDescription
-                self.isUpdating = false
-                return
-            }
-            
-            guard let record = record else {
-                self.error = "Failed to retrieve record"
-                self.isUpdating = false
-                return
-            }
-            
-            // Modify the record's properties
-            record["images"] = imageAssetArray
-            record["image"] = imageAsset
-            record["title"] = self.title
-            record["name"] = self.name as CKRecordValue
-            record["headline"] = self.headline as CKRecordValue
-            record["bio"] = self.bio as CKRecordValue
-            record["birthdate"] = self.birthdate as CKRecordValue
-            record["email"] = self.email as CKRecordValue
-            record["phone"] = self.phone as CKRecordValue
-            
-            privateDatabase.save(record) { (savedRecord, error) in
-                self.isUpdating = false
-                if let error = error {
-                    self.error = error.localizedDescription
-                } else {
-                    self.persona.recordID = savedRecord?.recordID
-                }
-            }
-        }
+        viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID ?? CKRecord.ID())
     }
-    // MARK: //UPDATE PERSONA
+    
 }
-
-
-
-//struct EditPersonaView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        EditPersonaView()
-//    }
-//}
 

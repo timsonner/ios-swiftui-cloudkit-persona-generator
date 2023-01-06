@@ -19,11 +19,8 @@ struct ManagePersonasListView: View {
         NavigationView {
             List {
                 ForEach(viewModel.personas) { persona in
-                    // ZStack hack to hide NavigationLink indicators.
-                    ZStack(alignment: .leading) {
-                        NavigationLink(destination: PersonaDetailView(persona: persona)) {
-                        }
-                        .hidden() // End hack.
+                    
+                    NavigationLink(destination: PersonaDetailView(persona: persona)) {
                         
                         PersonaListRowView(item: persona)
                             .contextMenu {
@@ -34,7 +31,7 @@ struct ManagePersonasListView: View {
                                     Image(systemName: "pencil")
                                 }
                             } // .contextMenu
-                    } // ZStack
+                    }
                 } // End ForEach
                 .onDelete(perform: deletePersona)
             }
