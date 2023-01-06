@@ -60,6 +60,7 @@ struct ManagePersonasListView: View {
         }
     }
     
+    // MARK: Helpers
     func deletePersona(offsets: IndexSet) {
         withAnimation {
             // Get the index of the persona to delete.
@@ -72,6 +73,7 @@ struct ManagePersonasListView: View {
             }
         }
     }
+    
 }
 
 struct PersonasListView_Previews: PreviewProvider {

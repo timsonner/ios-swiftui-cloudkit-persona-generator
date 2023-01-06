@@ -13,7 +13,7 @@ struct CreatePersonaView: View {
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     
-    @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
+    @State private var sourceType: UIImagePickerController.SourceType?
 //    let networkSingleton = NetworkSingleton()
     
     // User data variables
@@ -61,7 +61,9 @@ struct CreatePersonaView: View {
                         }
                     }
                     Button("Generate Random") {
-                        image = NetworkSingleton.shared.fetchImage()
+                        NetworkManager.shared.fetchImage(from: NetworkManager.url) { image in
+                                self.image = image
+                            }
                     }
                 }
                 .sheet(isPresented: $showingImagePicker) {
@@ -111,7 +113,7 @@ struct CreatePersonaView: View {
                         }
                     }
                     .sheet(isPresented: $showingGalleryImagePicker) {
-                        GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
+                        GalleryImagePicker(images: $images)
                     }
                     .onAppear {
                         // Set default images in gallery

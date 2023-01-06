@@ -11,7 +11,7 @@ struct EditPersonaView: View {
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     
-    @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
+    @State private var sourceType: UIImagePickerController.SourceType?
         
     @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
     
@@ -32,33 +32,36 @@ struct EditPersonaView: View {
         
         ScrollView(showsIndicators: false) {
             VStack {
-                Image(uiImage: image!)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .scaledToFit()
-                    .clipShape(Circle())
+                AvatarImagePickerView()
+//                Image(uiImage: image!)
+//                    .resizable()
+//                    .frame(width: 200, height: 200)
+//                    .scaledToFit()
+//                    .clipShape(Circle())
+//
+//                HStack {
+//                    Button("Select Image") {
+//                        sourceType = .photoLibrary
+//                        self.showingImagePicker = true
+//                    }
+//                    Button("Take Photo") {
+//                        sourceType = .camera
+//                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+//                            self.showingImagePicker = true
+//                        } else {
+//                            print("Camera not available")
+//                            // Show an error message or take some other action
+//                        }
+//                    }
+//                    Button("Generate Random") {
+//                        NetworkManager.shared.fetchImage(from: NetworkManager.url) { image in
+//                                self.image = image
+//                            }
+//                    }
+//                }
                 
-                HStack {
-                    Button("Select Image") {
-                        sourceType = .photoLibrary
-                        self.showingImagePicker = true
-                    }
-                    Button("Take Photo") {
-                        sourceType = .camera
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                            self.showingImagePicker = true
-                        } else {
-                            print("Camera not available")
-                            // Show an error message or take some other action
-                        }
-                    }
-                    Button("Generate Random") {
-                        self.image = NetworkSingleton.shared.fetchImage()
-                    }
                 }
-                .sheet(isPresented: $showingImagePicker) {
-                    ImagePicker(image: self.$image, sourcetype: self.$sourceType)
-                }
+                    // MARK: TextFields
                 VStack {
                     TextField("Title", text: $title)
                         .textFieldStyle(.roundedBorder)
@@ -76,6 +79,7 @@ struct EditPersonaView: View {
                     TextField("Phone", text: $phone)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
+                    // MARK: Gallery View
                     VStack {
                         HStack {
                             ScrollView(.horizontal) {
@@ -94,9 +98,7 @@ struct EditPersonaView: View {
                             showingGalleryImagePicker = true
                         }.buttonStyle(.borderedProminent)
                     }
-                    .sheet(isPresented: $showingGalleryImagePicker) {
-                        PhotoPicker(images: $images)
-                    }
+                    
                     
                     if error != nil {
                         Text(error!)
@@ -128,7 +130,14 @@ struct EditPersonaView: View {
                     }
                 }
             }
-        }.navigationTitle("Edit Persona")
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+            
+        }
+        .sheet(isPresented: $showingGalleryImagePicker) {
+            GalleryImagePicker(images: $images)
+        }
+        .navigationTitle("Edit Persona")
     }
     
     // MARK: Helper functions
