@@ -20,16 +20,21 @@ struct ManagePersonasListView: View {
         NavigationView {
             List {
                 ForEach(viewModel.personas) { persona in
-                    PersonaListRowView(item: persona)
-                        .contextMenu {
-                            Button(action: {
-                                selectedPersona = persona
-                                isEditPersonaViewPresented = true
-                            }) {
-                                Text("Edit")
-                                Image(systemName: "pencil")
+                    ZStack(alignment: .leading) {
+                        NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                            EmptyView()
+                        }.hidden()
+                        PersonaListRowView(item: persona)
+                            .contextMenu {
+                                Button(action: {
+                                    selectedPersona = persona
+                                    isEditPersonaViewPresented = true
+                                }) {
+                                    Text("Edit")
+                                    Image(systemName: "pencil")
+                                }
                             }
-                        }
+                    }
                 }
                 .onDelete(perform: deletePersona)
             }

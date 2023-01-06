@@ -10,7 +10,7 @@ import SwiftUI
 struct PersonaListRowView: View {
     var item: Persona
     var body: some View {
-        NavigationLink(destination: PersonaDetailView(persona: item)) {
+        
             HStack {
                 Image(uiImage: item.image)
                     .resizable()
@@ -28,8 +28,7 @@ struct PersonaListRowView: View {
                         .foregroundColor(.secondary)
                 }
             }
-        }
-        .buttonStyle(PlainButtonStyle())
+        
     }
 }
 
