@@ -33,71 +33,44 @@ struct EditPersonaView: View {
         ScrollView(showsIndicators: false) {
             VStack {
                 AvatarImagePickerView()
-//                Image(uiImage: image!)
-//                    .resizable()
-//                    .frame(width: 200, height: 200)
-//                    .scaledToFit()
-//                    .clipShape(Circle())
-//
-//                HStack {
-//                    Button("Select Image") {
-//                        sourceType = .photoLibrary
-//                        self.showingImagePicker = true
-//                    }
-//                    Button("Take Photo") {
-//                        sourceType = .camera
-//                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-//                            self.showingImagePicker = true
-//                        } else {
-//                            print("Camera not available")
-//                            // Show an error message or take some other action
-//                        }
-//                    }
-//                    Button("Generate Random") {
-//                        NetworkManager.shared.fetchImage(from: NetworkManager.url) { image in
-//                                self.image = image
-//                            }
-//                    }
-//                }
                 
+                // MARK: TextFields
+                
+                TextField("Title", text: $title)
+                    .textFieldStyle(.roundedBorder)
+                TextField("Name", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Headline", text: $headline)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Bio", text: $bio)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                DatePicker(selection: $birthdate, displayedComponents: .date) {
+                    Text("Birthday")
                 }
-                    // MARK: TextFields
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Phone", text: $phone)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                
+                // MARK: Gallery View
                 VStack {
-                    TextField("Title", text: $title)
-                        .textFieldStyle(.roundedBorder)
-                    TextField("Name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Headline", text: $headline)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Bio", text: $bio)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    DatePicker(selection: $birthdate, displayedComponents: .date) {
-                        Text("Birthday")
-                    }
-                    TextField("Email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Phone", text: $phone)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    // MARK: Gallery View
-                    VStack {
-                        HStack {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(images, id: \.self) { image in
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .frame(width: 300, height: 200)
-                                            .aspectRatio(contentMode: .fill)
-                                            .clipped()
-                                    }
+                    HStack {
+                        ScrollView(.horizontal) {
+                            HStack {
+                                ForEach(images, id: \.self) { image in
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .frame(width: 300, height: 200)
+                                        .aspectRatio(contentMode: .fill)
+                                        .clipped()
                                 }
                             }
                         }
-                        Button("Edit Gallery") {
-                            showingGalleryImagePicker = true
-                        }.buttonStyle(.borderedProminent)
                     }
+                    Button("Edit Gallery") {
+                        showingGalleryImagePicker = true
+                    }.buttonStyle(.borderedProminent)
+                    
                     
                     
                     if error != nil {
@@ -116,6 +89,7 @@ struct EditPersonaView: View {
                         .disabled(isUpdating)
                 }
                 .padding()
+            }// Main Vstack
                 .onAppear {
                     self.title = self.persona.title
                     self.image = self.persona.image
