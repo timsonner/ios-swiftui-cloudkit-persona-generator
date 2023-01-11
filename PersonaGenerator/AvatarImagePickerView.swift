@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct AvatarImagePickerView: View {
-    @State private var image: UIImage?
-        @State private var sourceType: UIImagePickerController.SourceType?
+    @Binding var image: UIImage?
+    @State private var sourceType: UIImagePickerController.SourceType?
     @State private var isPresentingImagePicker = false
 
         var body: some View {
@@ -60,12 +60,5 @@ struct AvatarImagePickerView: View {
             }
         }
 }
-
-struct Test_Previews: PreviewProvider {
-    static var previews: some View {
-        AvatarImagePickerView()
-    }
-}
-
 
 

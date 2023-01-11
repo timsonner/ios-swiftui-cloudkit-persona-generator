@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @ObservedObject var viewModel: ViewModel
+    //    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         TabView {
@@ -20,16 +20,15 @@ struct ContentView: View {
                 Image(systemName: "circle.fill")
                 Text("Manage Personas")
             }
-
+            
             // Second tab.
             VStack {
-                PreviewPersonasListView()
-            }
+                PreviewPersonasListView()           }
             .tabItem {
                 Image(systemName: "circle.fill")
                 Text("Preview Personas")
             }
-
+            
             // Third tab.
             VStack {
                 CreatePersonaView()

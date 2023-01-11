@@ -9,49 +9,55 @@ import SwiftUI
 import CloudKit
 
 
-struct ManagePersonasListView: View {
-    
+struct ManagePersonasListView: View {    
     @ObservedObject var viewModel = ViewModel()
-    @State private var isCreatePersonaViewPresented = false
+//    @State private var isCreatePersonaViewPresented = false
     @State private var selectedPersona: Persona?
-    
     var body: some View {
+        
         NavigationView {
             List {
-                ForEach(viewModel.personas) { persona in
-                    
-                    NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                if viewModel.isLoading {
+                    ProgressView("Loading Personas...")
+                } else {
+                    ForEach(viewModel.personas) { persona in
                         
-                        PersonaListRowView(item: persona)
-                            .contextMenu {
-                                Button(action: {
-                                    selectedPersona = persona
-                                }) {
-                                    Text("Edit")
-                                    Image(systemName: "pencil")
-                                }
-                            } // .contextMenu
-                    }
-                } // End ForEach
-                .onDelete(perform: deletePersona)
+                        NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                            
+                            PersonaListRowView(item: persona)
+                                .contextMenu {
+                                    Button(action: {
+                                        selectedPersona = persona
+                                    }) {
+                                        Text("Edit")
+                                        Image(systemName: "pencil")
+                                    }
+                                } // .contextMenu
+                        }
+                    } // End ForEach
+                    .onDelete(perform: deletePersona)
+                }
             }
             .toolbar {
                 EditButton()
+            }
+            .refreshable {
+                viewModel.fetchPersonas()
             }
             .navigationTitle("Manage Personas")
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(leading: Button(action: {
                 // Present the CreatePersonaView.
-                isCreatePersonaViewPresented = true
+                viewModel.isCreatePersonaViewPresented = true
             }) {
                 Text("Add Persona")
                 Image(systemName: "plus")
             })
-            .sheet(isPresented: $isCreatePersonaViewPresented) {
+            .sheet(isPresented: $viewModel.isCreatePersonaViewPresented) {
                 EditPersonaView(isNew: true)
             }
             .sheet(item: $selectedPersona) { persona in
-            EditPersonaView(persona: persona)
+                EditPersonaView(persona: persona)
             }
             .task {
                 // Fetch data from CloudKit here
@@ -73,7 +79,6 @@ struct ManagePersonasListView: View {
             }
         }
     }
-    
 }
 
 struct PersonasListView_Previews: PreviewProvider {

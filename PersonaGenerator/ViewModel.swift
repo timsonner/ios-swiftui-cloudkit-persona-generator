@@ -14,9 +14,12 @@ class ViewModel: ObservableObject {
     
     @Published var personas: [Persona] = []
     @Published var persona: Persona?
+    @Published var isLoading: Bool = false
+    @Published var isCreatePersonaViewPresented = false
     
     func fetchPersonas() {
         // Fetch data from CloudKit here
+        self.isLoading = true
         let query = CKQuery(recordType: "Persona", predicate: NSPredicate(value: true))
         privateDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 0) { (result) in
             switch result {
@@ -38,6 +41,9 @@ class ViewModel: ObservableObject {
                             }
                             // Load the image from the CKAsset
                             let image = UIImage(contentsOfFile: imageAsset.fileURL!.path)
+                            
+                            self.isLoading = false
+                            
                             return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
                         case .failure(let error):
                             print(error)
@@ -65,14 +71,13 @@ class ViewModel: ObservableObject {
     
     func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID) {
         
+        self.isLoading = true
         var imageAssetArray: [CKAsset] = []
         
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
-        
         let imageAsset = image?.convertToCKAsset()
-        
         // Retrieve the existing record from CloudKit
         let privateDatabase = CKContainer.default().privateCloudDatabase
         let recordID = recordID
@@ -99,27 +104,33 @@ class ViewModel: ObservableObject {
             record["phone"] = phone as CKRecordValue
             
             privateDatabase.save(record) { (savedRecord, error) in
-                if let error = error {
-                    print(error)
+                if error != nil {
+                    print(error as Any)
                 } else {
                     DispatchQueue.main.async {
                         self.persona?.recordID = savedRecord?.recordID
+                        self.isLoading = false
                     }
+                }
+                
+            }
+            
+        }
+    } // updatePersona
+    
+    func createPersona(record: Persona) {
+            self.isLoading = true
+        privateDatabase.save(record.record) { (savedRecord, error) in
+            
+            if error != nil {
+                print("Record Not Saved")
+                print(error as Any)
+            } else {
+                print("Record Saved")
+                DispatchQueue.main.async {
+                    self.isLoading = false
                 }
             }
         }
     }
-    
-    func createPersona(record: Persona) {
-        privateDatabase.save(record.record) { (savedRecord, error) in
-            if error == nil {
-                print("Record Saved")
-                
-            } else {
-                print("Record Not Saved")
-                print(error as Any)
-            }
-        }
-    }
-
 }

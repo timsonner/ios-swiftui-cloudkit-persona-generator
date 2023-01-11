@@ -24,6 +24,7 @@
 		2BCE608129667F0A008D2453 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE608029667F0A008D2453 /* ViewModel.swift */; };
 		2BCE609F2966A4D1008D2453 /* PersonaListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */; };
 		2BCE60A1296836A4008D2453 /* AvatarImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */; };
+		2BCE60A329685C09008D2453 /* TestImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE60A229685C09008D2453 /* TestImagePicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		2BCE608029667F0A008D2453 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaListRowView.swift; sourceTree = "<group>"; };
 		2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImagePickerView.swift; sourceTree = "<group>"; };
+		2BCE60A229685C09008D2453 /* TestImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestImagePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */,
 				2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */,
 				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
+				2BCE60A229685C09008D2453 /* TestImagePicker.swift */,
 				2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
 				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
@@ -179,6 +182,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B923140295AD36000DA7F22 /* PreviewPersonasListView.swift in Sources */,
+				2BCE60A329685C09008D2453 /* TestImagePicker.swift in Sources */,
 				2BBCEA6B29554FFA00B5CFE3 /* NetworkManager.swift in Sources */,
 				2B92313A295967DF00DA7F22 /* EditPersonaView.swift in Sources */,
 				2B92313E295AD26100DA7F22 /* PersonaDetailView.swift in Sources */,
