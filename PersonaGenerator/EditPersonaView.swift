@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import _PhotosUI_SwiftUI
 
 // text input  auto cpitalization .word
 
@@ -14,6 +15,8 @@ struct EditPersonaView: View {
     //MARK: - View specific properties
     @ObservedObject var viewModel = ViewModel()
     @Binding var isSheetShowing: Bool // Bool to dismiss sheet
+    @State var selectedImage: [PhotosPickerItem] = []
+    
     
     @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [])
     
@@ -61,69 +64,96 @@ struct EditPersonaView: View {
                 
                 // MARK: Gallery View
                 VStack {
-                    HStack {
-                        ScrollView(.horizontal) {
-                            HStack {
-                                ForEach(images, id: \.self) { image in
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .frame(width: 300, height: 200)
-                                        .aspectRatio(contentMode: .fill)
-                                        .clipped()
-                                }
+                            
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(images, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: 300, height: 200)
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                                    .contextMenu {
+                                        Button(action: {
+                                            self.images.remove(at: self.images.firstIndex(of: image)!)
+                                        }) {
+                                            Text("Delete")
+                                        }
+                                    }
                             }
                         }
                     }
-                    Button("Edit Gallery") {
-                        showingGalleryImagePicker = true
-                    }.buttonStyle(.borderedProminent)
-                    
-                    // MARK: Button Create/Update persona
-                    Button("Save") {
-                        if isNew {
-                            createPersona()
-                            isSheetShowing = false
-                        } else {
-                            updatePersona()
+                            
+                            //                    Button("Edit Gallery") {
+                            //                        showingGalleryImagePicker = true
+                            //                    }.buttonStyle(.borderedProminent)
+                            VStack {
+                                PhotosPicker (
+                                    selection: $selectedImage,
+                                    maxSelectionCount: 5,
+                                    matching: .images,
+                                    photoLibrary: .shared()
+                                ) {
+                                    Text("Choose Photos from Gallery")
+                                }
+                                .onChange(of: selectedImage) { items in
+                                    for item in items {
+                                        Task {
+                                            if let data = try? await item.loadTransferable(type: Data.self) {
+                                                images.append(((UIImage(data: data) ?? UIImage(systemName: "person"))!))
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                
+                                // MARK: Button Create/Update persona
+                                Button("Save") {
+                                    if isNew {
+                                        createPersona()
+                                        isSheetShowing = false
+                                    } else {
+                                        updatePersona()
+                                    }
+                                }.buttonStyle(.borderedProminent)
+                                    .disabled(viewModel.isLoading)
+                                
+                                if viewModel.isLoading {
+                                    ProgressView("Saving...")
+                                        .progressViewStyle(.circular)
+                                }
+                            }
+                            .padding()
+                        }// Main Vstack
+                        .padding(.horizontal)
+                        .onAppear {
+                            self.title = self.persona.title
+                            self.image = self.persona.image
+                            self.name = self.persona.name
+                            self.headline = self.persona.headline
+                            self.bio = self.persona.bio
+                            self.birthdate = self.persona.birthdate
+                            self.email = self.persona.email
+                            self.phone = self.persona.phone
+                            self.images = self.persona.images.compactMap { image in
+                                return UIImage(contentsOfFile: image.fileURL!.path)
+                            }
                         }
-                    }.buttonStyle(.borderedProminent)
-                        .disabled(viewModel.isLoading)
-                    
-                    if viewModel.isLoading {
-                        ProgressView("Saving...")
-                            .progressViewStyle(.circular)
+                    }
+                    .sheet(isPresented: $showingImagePicker) {
+                        ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+                    }
+                    .sheet(isPresented: $showingGalleryImagePicker) {
+                        GalleryImagePicker(images: $images)
+                    }
+                    .navigationTitle("Edit Persona")
+                    .alert(isPresented: $viewModel.isAlertPresented) {
+                        Alert(title: Text("Error"), message: Text(viewModel.error))
                     }
                 }
-                .padding()
-            }// Main Vstack
-            .padding(.horizontal)
-            .onAppear {
-                self.title = self.persona.title
-                self.image = self.persona.image
-                self.name = self.persona.name
-                self.headline = self.persona.headline
-                self.bio = self.persona.bio
-                self.birthdate = self.persona.birthdate
-                self.email = self.persona.email
-                self.phone = self.persona.phone
-                self.images = self.persona.images.compactMap { image in
-                    return UIImage(contentsOfFile: image.fileURL!.path)
-                }
-            }
-        }
-        .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: self.$image, sourcetype: self.$sourceType)
-        }
-        .sheet(isPresented: $showingGalleryImagePicker) {
-            GalleryImagePicker(images: $images)
-        }
-        .navigationTitle("Edit Persona")
-        .alert(isPresented: $viewModel.isAlertPresented) {
-            Alert(title: Text("Error"), message: Text(viewModel.error))
-        }
+            
         
     }
-    
     // MARK: Helper functions
     func updatePersona() {
         self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!)
@@ -139,4 +169,6 @@ struct EditPersonaView: View {
         viewModel.createPersona(record: record)
     }
 }
+
+
 

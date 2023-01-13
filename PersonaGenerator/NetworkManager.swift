@@ -12,7 +12,7 @@ class NetworkManager {
     static var shared = NetworkManager()
     static let url = URL(string: "https://thispersondoesnotexist.com/imagezz")!
     
-    private init() {}
+//    private init() {}
     
     func fetchImage(from url: URL, viewModel: ViewModel, completion: @escaping (UIImage?, Error?) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in

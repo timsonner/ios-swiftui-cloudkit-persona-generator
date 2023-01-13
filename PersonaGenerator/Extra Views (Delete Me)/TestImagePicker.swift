@@ -15,7 +15,6 @@ struct TestImagePicker: View {
     @State private var imageData: [PhotosPickerItem: Data] = [:]
     
     //MARK: - Body
-    
     var body: some View {
         VStack {
             PhotosPicker(

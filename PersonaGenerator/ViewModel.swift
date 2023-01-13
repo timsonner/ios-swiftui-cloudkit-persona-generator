@@ -150,4 +150,29 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    
+    private let url = URL(string: "https://thispersondoesnotexist.com/imagezz")!
+        
+    func fetchImage(completion: @escaping (UIImage?, Error?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else {
+                // Handle error
+                self.error = error?.localizedDescription ?? "An unknown error has occurred"
+                self.isAlertPresented = true
+                completion(nil,error)
+                return
+            }
+            DispatchQueue.main.async {
+                if let image = UIImage(data: data) {
+                    completion(image,nil)
+                } else {
+                    // Handle invalid image data
+                    self.error = "Invalid image data"
+                    self.isAlertPresented = true
+                    completion(nil,nil)
+                }
+            }
+        }
+        task.resume()
+    }
 }
