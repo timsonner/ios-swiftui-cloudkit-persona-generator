@@ -9,9 +9,8 @@ import SwiftUI
 import CloudKit
 
 
-struct ManagePersonasListView: View {    
+struct ManagePersonasListView: View {
     @ObservedObject var viewModel = ViewModel()
-//    @State private var isCreatePersonaViewPresented = false
     @State private var selectedPersona: Persona?
     var body: some View {
         
@@ -48,16 +47,16 @@ struct ManagePersonasListView: View {
             .navigationBarTitleDisplayMode(.large)
             .navigationBarItems(leading: Button(action: {
                 // Present the CreatePersonaView.
-                viewModel.isCreatePersonaViewPresented = true
+                viewModel.isEditPersonaViewPresented = true
             }) {
                 Text("Add Persona")
                 Image(systemName: "plus")
             })
-            .sheet(isPresented: $viewModel.isCreatePersonaViewPresented) {
-                EditPersonaView(isNew: true)
+            .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
+                EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
             }
             .sheet(item: $selectedPersona) { persona in
-                EditPersonaView(persona: persona)
+                EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
             }
             .task {
                 // Fetch data from CloudKit here

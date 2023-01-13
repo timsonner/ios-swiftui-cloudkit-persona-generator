@@ -15,7 +15,7 @@ class ViewModel: ObservableObject {
     @Published var personas: [Persona] = []
     @Published var persona: Persona?
     @Published var isLoading: Bool = false
-    @Published var isCreatePersonaViewPresented = false
+    @Published var isEditPersonaViewPresented = false
     
     func fetchPersonas() {
         // Fetch data from CloudKit here
@@ -64,7 +64,9 @@ class ViewModel: ObservableObject {
                 print(error!)
             } else {
                 // Remove the deleted record from the `personas` array
-                self.personas.removeAll(where: { $0.recordID == recordID })
+                DispatchQueue.main.async {
+                    self.personas.removeAll(where: { $0.recordID == recordID })
+                }
             }
         }
     }

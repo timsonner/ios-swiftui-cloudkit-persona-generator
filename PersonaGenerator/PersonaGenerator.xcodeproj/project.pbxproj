@@ -69,14 +69,12 @@
 				2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */,
 				2BCE609E2966A4D1008D2453 /* PersonaListRowView.swift */,
 				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
-				2BCE60A229685C09008D2453 /* TestImagePicker.swift */,
 				2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
 				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
-				2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */,
+				2BCE60A42970EF3C008D2453 /* Extra Views (Delete Me) */,
 				2B923143295AE8A800DA7F22 /* Extensions.swift */,
 				2B92313D295AD26100DA7F22 /* PersonaDetailView.swift */,
-				2B92313F295AD36000DA7F22 /* PreviewPersonasListView.swift */,
 				2BBCEA6A29554FFA00B5CFE3 /* NetworkManager.swift */,
 				2BBCEA5529554E2400B5CFE3 /* PersonaGenerator */,
 				2BBCEA5429554E2400B5CFE3 /* Products */,
@@ -109,6 +107,16 @@
 				2BBCEA5D29554E2700B5CFE3 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		2BCE60A42970EF3C008D2453 /* Extra Views (Delete Me) */ = {
+			isa = PBXGroup;
+			children = (
+				2BCE60A229685C09008D2453 /* TestImagePicker.swift */,
+				2B92313F295AD36000DA7F22 /* PreviewPersonasListView.swift */,
+				2BBCEA6429554E9200B5CFE3 /* CreatePersonaView.swift */,
+			);
+			path = "Extra Views (Delete Me)";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

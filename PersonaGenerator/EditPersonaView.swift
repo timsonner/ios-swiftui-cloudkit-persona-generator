@@ -1,10 +1,12 @@
 import SwiftUI
 import CloudKit
 
+// text input  auto cpitalization .word
+
 struct EditPersonaView: View {
-    
     //MARK: - View specific properties
     @ObservedObject var viewModel = ViewModel()
+    @Binding var isSheetShowing: Bool // Bool to dismiss sheet
     @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [])
     @State var isNew = false
 //    @State private var error: String?
@@ -72,6 +74,7 @@ struct EditPersonaView: View {
                     Button("Update Persona") {
                         if isNew {
                             createPersona()
+                            isSheetShowing = false
                         } else {
                             updatePersona()
                         }
@@ -110,8 +113,6 @@ struct EditPersonaView: View {
         //        .alert("Loading", isPresented: $viewModel.isLoading, actions: {})
         
     }
-    
-    
     
     // MARK: Helper functions
     func updatePersona() {

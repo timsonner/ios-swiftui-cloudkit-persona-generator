@@ -89,7 +89,7 @@ struct PersonaDetailView: View {
             Text("Edit")
         })
         .sheet(isPresented: $isEditPersonaViewPresented) {
-            EditPersonaView(persona: persona)
+//            EditPersonaView(parent: self, persona: persona)
         }
     }
 }

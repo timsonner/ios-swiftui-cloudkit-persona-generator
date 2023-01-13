@@ -70,7 +70,6 @@ struct CreatePersonaView: View {
                     ImagePicker(image: self.$image, sourcetype: self.$sourceType)
                 }
                 
-                
                 VStack {
                     TextField("Persona title", text: $title)
                         .padding()
