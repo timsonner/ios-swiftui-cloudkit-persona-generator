@@ -17,7 +17,7 @@ class ViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isEditPersonaViewPresented: Bool = false
     @Published var error: String = "Fuuuuck"
-    @Published var isAlertPresented = true
+    @Published var isAlertPresented = false
     
     func fetchPersonas() {
         // Fetch data from CloudKit here
@@ -49,17 +49,21 @@ class ViewModel: ObservableObject {
                             return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
                             
                         case .failure(let error):
-                            self.error = error.localizedDescription
-                            self.isAlertPresented = true
-                            print(error)
+                            DispatchQueue.main.async {
+                                self.error = error.localizedDescription
+                                self.isAlertPresented = true
+                                print(error)
+                            }
                             return nil
                         }
                     }
                 }
             case .failure(let error):
-                self.error = error.localizedDescription
-                self.isAlertPresented = true
-                print(error)
+                DispatchQueue.main.async {
+                    self.error = error.localizedDescription
+                    self.isAlertPresented = true
+                    print(error)
+                }
             }
         }
     }
@@ -88,22 +92,28 @@ class ViewModel: ObservableObject {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
+        
         let imageAsset = image?.convertToCKAsset()
         // Retrieve the existing record from CloudKit
         let privateDatabase = CKContainer.default().privateCloudDatabase
         let recordID = recordID
         privateDatabase.fetch(withRecordID: recordID) { (record, error) in
+            
             if let error = error {
-                self.error = error.localizedDescription
-                self.isAlertPresented = true
-                print(error)
+                DispatchQueue.main.async {
+                    self.error = error.localizedDescription
+                    self.isAlertPresented = true
+                    print(error)
+                }
                 return
             }
             
             guard let record = record else {
-                self.error = "Error creating record"
-                self.isAlertPresented = true
-                print("Error creating record")
+                DispatchQueue.main.async {
+                    self.error = "Error creating record"
+                    self.isAlertPresented = true
+                    print("Error creating record")
+                }
                 return
             }
             
@@ -120,9 +130,11 @@ class ViewModel: ObservableObject {
             
             privateDatabase.save(record) { (savedRecord, error) in
                 if error != nil {
-                    self.error = error!.localizedDescription
-                    self.isAlertPresented = true
-                    print(error as Any)
+                    DispatchQueue.main.async {
+                        self.error = error!.localizedDescription
+                        self.isAlertPresented = true
+                        print(error as Any)
+                    }
                 } else {
                     DispatchQueue.main.async {
                         self.persona?.recordID = savedRecord?.recordID
@@ -138,10 +150,12 @@ class ViewModel: ObservableObject {
         privateDatabase.save(record.record) { (savedRecord, error) in
             
             if error != nil {
-                self.error = error!.localizedDescription
-                self.isAlertPresented = true
-                print("Record Not Saved")
-                print(error as Any)
+                DispatchQueue.main.async {
+                    self.error = error!.localizedDescription
+                    self.isAlertPresented = true
+                    print("Record Not Saved")
+                    print(error as Any)
+                }
             } else {
                 print("Record Saved")
                 DispatchQueue.main.async {
@@ -151,7 +165,7 @@ class ViewModel: ObservableObject {
         }
     }
     
-    private let url = URL(string: "https://thispersondoesnotexist.com/imagezz")!
+    private let url = URL(string: "https://thispersondoesnotexist.com/image")!
         
     func fetchImage(completion: @escaping (UIImage?, Error?) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
@@ -167,9 +181,11 @@ class ViewModel: ObservableObject {
                     completion(image,nil)
                 } else {
                     // Handle invalid image data
-                    self.error = "Invalid image data"
-                    self.isAlertPresented = true
-                    completion(nil,nil)
+                    DispatchQueue.main.async {
+                        self.error = "Invalid image data"
+                        self.isAlertPresented = true
+                        completion(nil,nil)
+                    }
                 }
             }
         }

@@ -18,7 +18,7 @@ struct AvatarImagePickerView: View {
     
     //MARK: - Body
     var body: some View {
-        VStack(spacing: 10) {
+        VStack {
             if !isLoadingImage {
                 Image(uiImage: image ?? UIImage(systemName: "person.circle.fill")!)
                     .resizable()
@@ -30,58 +30,73 @@ struct AvatarImagePickerView: View {
                 ProgressView()
                     .frame(width: 200, height: 200)
             }
-            
-                VStack {
-                    PhotosPicker (
-                        selection: $selectedImage,
-                        maxSelectionCount: 1,
-                        matching: .images,
-                        photoLibrary: .shared()
-                    ) {
-                        Text("Choose Photo from Gallery")
-                    }
-                    .onChange(of: selectedImage) { items in
-                        for item in items {
-                            Task {
-                                if let data = try? await item.loadTransferable(type: Data.self) {
-                                    image = UIImage(data: data)
-                                }
+            VStack(spacing: 10) {
+                PhotosPicker (
+                    selection: $selectedImage,
+                    maxSelectionCount: 1,
+                    matching: .images,
+                    photoLibrary: .shared()
+                ) {
+                    Text("Choose Photo from Gallery")
+                }
+                .onChange(of: selectedImage) { items in
+                    for item in items {
+                        Task {
+                            if let data = try? await item.loadTransferable(type: Data.self) {
+                                image = UIImage(data: data)
                             }
                         }
                     }
+                }
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
                     Button(action: {
                         self.sourceType = .camera
                         self.isPresentingImagePicker = true
                     }) {
-                        Text("Take a Photo")
+                        Text("Camera")
                     }
-                    Button(action: {
-                        viewModel.fetchImage() {
-                            (image, error) in
-                            if let image = image {
-                                self.image = image
-                            } else {
-                                DispatchQueue.main.async {
-                                    viewModel.error = error?.localizedDescription ?? "Error fetching image"
-                                    viewModel.isAlertPresented = true
-                                }
-                                print("Error fetching image")
-                            }
-                            self.isLoadingImage = false
+                } else {
+                    Button {
+                        DispatchQueue.main.async {
+                            viewModel.error = "Camera not available"
+                            viewModel.isAlertPresented = true
+                            print("Camera not available...")
                         }
-                        self.isLoadingImage = true
-                    }) {
-                        Text("AI Generated Random")
                     }
+                label: {
+                    Text("Camera")
                 }
-                .sheet(isPresented: $isPresentingImagePicker) {
-                    ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+                .disabled(true)
                 }
-                .alert(isPresented: $viewModel.isAlertPresented) {
-                    Alert(title: Text("error"), message: Text(viewModel.error))
+                
+                Button(action: {
+                    viewModel.fetchImage() {
+                        (image, error) in
+                        if let image = image {
+                            self.image = image
+                        } else {
+                            DispatchQueue.main.async {
+                                viewModel.error = error?.localizedDescription ?? "Error fetching image"
+                                viewModel.isAlertPresented = true
+                            }
+                            print("Error fetching image")
+                        }
+                        self.isLoadingImage = false
+                    }
+                    self.isLoadingImage = true
+                }) {
+                    Text("AI Generated Random")
                 }
             }
-        }
+            .padding()
+            .sheet(isPresented: $isPresentingImagePicker) {
+                ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+            }
+            .alert(isPresented: $viewModel.isAlertPresented) {
+                Alert(title: Text("error"), message: Text(viewModel.error))
+            }
+        }.padding()
     }
-    
+}
+
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B21285529718552009E1E18 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B21285429718552009E1E18 /* PhotoPicker.swift */; };
 		2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */; };
 		2B92313A295967DF00DA7F22 /* EditPersonaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B923139295967DF00DA7F22 /* EditPersonaView.swift */; };
 		2B92313C295A387000DA7F22 /* ManagePersonasListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B21285429718552009E1E18 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryImagePicker.swift; sourceTree = "<group>"; };
 		2B923139295967DF00DA7F22 /* EditPersonaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPersonaView.swift; sourceTree = "<group>"; };
 		2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePersonasListView.swift; sourceTree = "<group>"; };
@@ -64,10 +66,10 @@
 				2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */,
 				2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */,
 				2BCE609E2966A4D1008D2453 /* PersonaRowView.swift */,
+				2B21285429718552009E1E18 /* PhotoPicker.swift */,
 				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
 				2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */,
 				2BBCEA6829554F6000B5CFE3 /* ImagePicker.swift */,
-				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
 				2BCE60A42970EF3C008D2453 /* Extra Views (Delete Me) */,
 				2B923143295AE8A800DA7F22 /* Extensions.swift */,
 				2B92313D295AD26100DA7F22 /* PersonaDetailView.swift */,
@@ -108,6 +110,7 @@
 		2BCE60A42970EF3C008D2453 /* Extra Views (Delete Me) */ = {
 			isa = PBXGroup;
 			children = (
+				2B92313529592FD800DA7F22 /* GalleryImagePicker.swift */,
 				2BCE60A229685C09008D2453 /* TestImagePicker.swift */,
 			);
 			path = "Extra Views (Delete Me)";
@@ -191,6 +194,7 @@
 				2BCE60A1296836A4008D2453 /* AvatarImagePickerView.swift in Sources */,
 				2BBCEA5729554E2400B5CFE3 /* PersonaGeneratorApp.swift in Sources */,
 				2BCE608129667F0A008D2453 /* ViewModel.swift in Sources */,
+				2B21285529718552009E1E18 /* PhotoPicker.swift in Sources */,
 				2B92313C295A387000DA7F22 /* ManagePersonasListView.swift in Sources */,
 				2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */,
 				2B923144295AE8A800DA7F22 /* Extensions.swift in Sources */,

@@ -41,7 +41,23 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
         return picker
     }
-    
+//    func makeUIViewController(context: UIViewControllerRepresentableContext<ImagePicker>) -> UIImagePickerController {
+//        let picker = UIImagePickerController()
+//        picker.delegate = context.coordinator
+//        // Check if sourcetype is available, eg is camera available.
+//        if let sourcetype = sourcetype {
+//            if UIImagePickerController.isSourceTypeAvailable(sourcetype) {
+//                picker.sourceType = sourcetype
+//            } else {
+//                // Handle error camera not available.
+//                let alert = UIAlertController(title: "Error", message: "Camera is not available", preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                picker.present(alert, animated: true, completion: nil)
+//            }
+//        }
+//        return picker
+//    }
+
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<ImagePicker>) {
     }
 }
