@@ -1,3 +1,10 @@
+//
+//  EditPersonaView.swift
+//  Persona Generator
+//
+//  Created by Timothy Sonner on 12/21/22.
+//
+
 import SwiftUI
 import CloudKit
 
@@ -7,9 +14,10 @@ struct EditPersonaView: View {
     //MARK: - View specific properties
     @ObservedObject var viewModel = ViewModel()
     @Binding var isSheetShowing: Bool // Bool to dismiss sheet
+    
     @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [])
+    
     @State var isNew = false
-//    @State private var error: String?
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
     @State private var sourceType: UIImagePickerController.SourceType?
@@ -35,7 +43,7 @@ struct EditPersonaView: View {
                     .textFieldStyle(.roundedBorder)
                 TextField("Name", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-//                    .keyboardType(.namePhonePad)
+                //                    .keyboardType(.namePhonePad)
                     .textInputAutocapitalization(.words)
                 TextField("Headline", text: $headline)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -71,7 +79,7 @@ struct EditPersonaView: View {
                     }.buttonStyle(.borderedProminent)
                     
                     // MARK: Button Create/Update persona
-                    Button("Update Persona") {
+                    Button("Save") {
                         if isNew {
                             createPersona()
                             isSheetShowing = false
@@ -82,7 +90,7 @@ struct EditPersonaView: View {
                         .disabled(viewModel.isLoading)
                     
                     if viewModel.isLoading {
-                        ProgressView("Loading...")
+                        ProgressView("Saving...")
                             .progressViewStyle(.circular)
                     }
                 }
@@ -103,7 +111,6 @@ struct EditPersonaView: View {
                 }
             }
         }
-        
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(image: self.$image, sourcetype: self.$sourceType)
         }
@@ -111,7 +118,9 @@ struct EditPersonaView: View {
             GalleryImagePicker(images: $images)
         }
         .navigationTitle("Edit Persona")
-        //        .alert("Loading", isPresented: $viewModel.isLoading, actions: {})
+        .alert(isPresented: $viewModel.isAlertPresented) {
+            Alert(title: Text("Error"), message: Text(viewModel.error))
+        }
         
     }
     

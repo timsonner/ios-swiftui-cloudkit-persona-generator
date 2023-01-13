@@ -8,7 +8,6 @@
 import SwiftUI
 import CloudKit
 
-
 struct ManagePersonasListView: View {
     @ObservedObject var viewModel = ViewModel()
     @State private var selectedPersona: Persona?
@@ -23,7 +22,7 @@ struct ManagePersonasListView: View {
                         
                         NavigationLink(destination: PersonaDetailView(persona: persona)) {
                             
-                            PersonaListRowView(item: persona)
+                            PersonaRowView(item: persona)
                                 .contextMenu {
                                     Button(action: {
                                         selectedPersona = persona
@@ -62,6 +61,8 @@ struct ManagePersonasListView: View {
                 // Fetch data from CloudKit here
                 viewModel.fetchPersonas()
             }
+        }.alert(isPresented: $viewModel.isAlertPresented) {
+            Alert(title: Text("error"), message: Text(viewModel.error))
         }
     }
     

@@ -15,7 +15,9 @@ class ViewModel: ObservableObject {
     @Published var personas: [Persona] = []
     @Published var persona: Persona?
     @Published var isLoading: Bool = false
-    @Published var isEditPersonaViewPresented = false
+    @Published var isEditPersonaViewPresented: Bool = false
+    @Published var error: String = "Fuuuuck"
+    @Published var isAlertPresented = true
     
     func fetchPersonas() {
         // Fetch data from CloudKit here
@@ -45,13 +47,18 @@ class ViewModel: ObservableObject {
                             self.isLoading = false
                             
                             return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
+                            
                         case .failure(let error):
+                            self.error = error.localizedDescription
+                            self.isAlertPresented = true
                             print(error)
                             return nil
                         }
                     }
                 }
             case .failure(let error):
+                self.error = error.localizedDescription
+                self.isAlertPresented = true
                 print(error)
             }
         }
@@ -61,6 +68,8 @@ class ViewModel: ObservableObject {
         privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
             if error != nil {
                 // Handle error
+                self.error = error!.localizedDescription
+                self.isAlertPresented = true
                 print(error!)
             } else {
                 // Remove the deleted record from the `personas` array
@@ -85,11 +94,15 @@ class ViewModel: ObservableObject {
         let recordID = recordID
         privateDatabase.fetch(withRecordID: recordID) { (record, error) in
             if let error = error {
+                self.error = error.localizedDescription
+                self.isAlertPresented = true
                 print(error)
                 return
             }
             
             guard let record = record else {
+                self.error = "Error creating record"
+                self.isAlertPresented = true
                 print("Error creating record")
                 return
             }
@@ -107,6 +120,8 @@ class ViewModel: ObservableObject {
             
             privateDatabase.save(record) { (savedRecord, error) in
                 if error != nil {
+                    self.error = error!.localizedDescription
+                    self.isAlertPresented = true
                     print(error as Any)
                 } else {
                     DispatchQueue.main.async {
@@ -114,17 +129,17 @@ class ViewModel: ObservableObject {
                         self.isLoading = false
                     }
                 }
-                
             }
-            
         }
     } // updatePersona
     
     func createPersona(record: Persona) {
-            self.isLoading = true
+        self.isLoading = true
         privateDatabase.save(record.record) { (savedRecord, error) in
             
             if error != nil {
+                self.error = error!.localizedDescription
+                self.isAlertPresented = true
                 print("Record Not Saved")
                 print(error as Any)
             } else {
