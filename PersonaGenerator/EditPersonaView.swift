@@ -28,15 +28,15 @@ struct EditPersonaView: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack {
+            VStack(spacing: 20) {
                 AvatarImagePickerView(image: self.$image)
                 // MARK: TextFields
                 TextField("Title", text: $title)
                     .textFieldStyle(.roundedBorder)
                 TextField("Name", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.namePhonePad)
-                    .textContentType(.name)
+//                    .keyboardType(.namePhonePad)
+                    .textInputAutocapitalization(.words)
                 TextField("Headline", text: $headline)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                 TextField("Bio", text: $bio)
@@ -88,6 +88,7 @@ struct EditPersonaView: View {
                 }
                 .padding()
             }// Main Vstack
+            .padding(.horizontal)
             .onAppear {
                 self.title = self.persona.title
                 self.image = self.persona.image

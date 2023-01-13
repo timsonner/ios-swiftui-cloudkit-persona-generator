@@ -11,15 +11,22 @@ struct AvatarImagePickerView: View {
     @Binding var image: UIImage?
     @State private var sourceType: UIImagePickerController.SourceType?
     @State private var isPresentingImagePicker = false
-
+    @State private var isLoadingImage = false
         var body: some View {
-            VStack(spacing: 10) {
-                Image(uiImage: image ?? UIImage(systemName: "person.circle.fill")!)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .scaledToFit()
-                    .clipShape(Circle())
-                    .padding(.top)
+            
+                VStack(spacing: 10) {
+                    
+                    if !isLoadingImage {
+                    Image(uiImage: image ?? UIImage(systemName: "person.circle.fill")!)
+                        .resizable()
+                        .frame(width: 200, height: 200)
+                        .scaledToFit()
+                        .clipShape(Circle())
+                        .padding(.top)
+                } else {
+                    ProgressView()
+                        .frame(width: 200, height: 200)
+                }
 
                 Button(action: {
                     self.sourceType = .photoLibrary
@@ -35,22 +42,18 @@ struct AvatarImagePickerView: View {
                 }
 
                 Button(action: {
-                    let task = URLSession.shared.dataTask(with: NetworkManager.url) { data, response, error in
-                        guard let data = data, error == nil else {
-                            // Handle error
-                            return
+                    NetworkManager.shared.fetchImage(from: NetworkManager.url) {
+                        (image) in
+                        if let image = image {
+                            // Update your UI with the image
+                            self.image = image
+                        } else {
+                            // Handle error, for example by showing an alert
+                            print("Error fetching image")
                         }
-
-                        DispatchQueue.main.async {
-                            if let image = UIImage(data: data) {
-                                // Update image on main thread
-                                self.image = image
-                            } else {
-                                // Handle invalid image data
-                            }
-                        }
+                        self.isLoadingImage = false
                     }
-                    task.resume()
+                    self.isLoadingImage = true
                 }) {
                     Text("AI Generated Random")
                 }
