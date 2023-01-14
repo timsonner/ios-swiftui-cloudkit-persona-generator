@@ -14,8 +14,8 @@ struct PersonaRowView: View {
         HStack {
             Image(uiImage: item.image)
                 .resizable()
-                .scaledToFill()
                 .frame(width: 80, height: 60, alignment: .center)
+                .scaledToFill()
                 .cornerRadius(10)
             VStack(alignment: .leading) {
                 Text(item.title)
@@ -27,6 +27,7 @@ struct PersonaRowView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+
         }
         
     }

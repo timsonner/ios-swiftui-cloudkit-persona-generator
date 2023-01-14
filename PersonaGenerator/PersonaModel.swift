@@ -20,8 +20,10 @@ struct Persona: Identifiable {
     var email: String
     var phone: String
     var images: [CKAsset]
+    var isFavorite: Bool
+    var website: String
     
-    init(recordID: CKRecord.ID?, title: String, image: UIImage, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, images: [CKAsset]) {
+    init(recordID: CKRecord.ID?, title: String, image: UIImage, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, images: [CKAsset], isFavorite: Bool, website: String) {
         self.id = recordID ?? CKRecord.ID()
         self.recordID = recordID
         self.title = title
@@ -33,6 +35,8 @@ struct Persona: Identifiable {
         self.email = email
         self.phone = phone
         self.images = images
+        self.isFavorite = isFavorite
+        self.website = website
     }
 }
 
@@ -56,6 +60,8 @@ extension Persona {
         record["email"] = email
         record["phone"] = phone
         record["images"] = images
+        record["isFavorite"] = isFavorite
+        record["website"] = website
         return record
     }
 }

@@ -23,7 +23,7 @@ struct AvatarImagePickerView: View {
                 Image(uiImage: image ?? UIImage(systemName: "person.circle.fill")!)
                     .resizable()
                     .frame(width: 200, height: 200)
-                    .scaledToFit()
+                    .scaledToFill()
                     .clipShape(Circle())
                     .padding(.top)
             } else {

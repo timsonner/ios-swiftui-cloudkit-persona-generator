@@ -38,15 +38,17 @@ class ViewModel: ObservableObject {
                                   let birthdate = record["birthdate"] as? Date,
                                   let email = record["email"] as? String,
                                   let phone = record["phone"] as? String,
+                                  let isFavorite = record["isFavorite"] as? Bool,
+                                  let website = record["website"] as? String,
                                   let images = record["images"] as? [CKAsset] else {
                                 return nil
                             }
                             // Load the image from the CKAsset
                             let image = UIImage(contentsOfFile: imageAsset.fileURL!.path)
-                            
+
                             self.isLoading = false
                             
-                            return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
+                            return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
                             
                         case .failure(let error):
                             DispatchQueue.main.async {
@@ -84,7 +86,7 @@ class ViewModel: ObservableObject {
         }
     }
     
-    func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID) {
+    func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID, isFavorite: Bool, website: String) {
         
         self.isLoading = true
         var imageAssetArray: [CKAsset] = []
@@ -127,6 +129,7 @@ class ViewModel: ObservableObject {
             record["birthdate"] = birthdate as CKRecordValue
             record["email"] = email as CKRecordValue
             record["phone"] = phone as CKRecordValue
+            record["isFavorite"] = isFavorite
             
             privateDatabase.save(record) { (savedRecord, error) in
                 if error != nil {

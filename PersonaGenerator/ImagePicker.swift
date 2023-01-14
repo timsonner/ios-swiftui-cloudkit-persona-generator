@@ -36,8 +36,12 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.delegate = context.coordinator
         // Check sourcetype for UIImagePicker
         if let sourcetype = sourcetype {
-            // example: picker.sourceType = .camera
+            // Configure picker.
             picker.sourceType = sourcetype
+            // Allow editing if sourcetype is camera
+            if sourcetype == UIImagePickerController.SourceType.camera {
+                picker.allowsEditing = true
+            }
         }
         return picker
     }

@@ -11,19 +11,18 @@ import PhotosUI
 struct PhotoPicker: UIViewControllerRepresentable {
     
     @Binding var pickedImage: UIImage?
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
+    
     func makeUIViewController(context: Context) -> PHPickerViewController {
-        var configuration = PHPickerConfiguration()
-        configuration.filter = .images
-        let picker = PHPickerViewController(configuration: configuration)
+        var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
         picker.modalPresentationStyle = .overFullScreen
-//        picker.configuration.filter = [.image]
-        
         return picker
     }
 
@@ -49,4 +48,5 @@ struct PhotoPicker: UIViewControllerRepresentable {
             }
         }
     }
+    
 }

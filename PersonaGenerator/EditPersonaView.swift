@@ -18,7 +18,7 @@ struct EditPersonaView: View {
     @State var selectedImage: [PhotosPickerItem] = []
     
     
-    @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [])
+    @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
     
     @State var isNew = false
     @State private var showingImagePicker = false
@@ -36,6 +36,8 @@ struct EditPersonaView: View {
     @State private var email: String = ""
     @State private var phone: String = ""
     @State private var images: [UIImage] = []
+    @State private var isFavorite: Bool = false
+    @State private var website: String = ""
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -58,6 +60,9 @@ struct EditPersonaView: View {
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.emailAddress)
+                TextField("Website", text: $website)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.webSearch)
                 TextField("Phone", text: $phone)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.phonePad)
@@ -156,7 +161,7 @@ struct EditPersonaView: View {
     }
     // MARK: Helper functions
     func updatePersona() {
-        self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!)
+        self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
     }
     
     func createPersona() {
@@ -164,7 +169,7 @@ struct EditPersonaView: View {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
         
-        let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray)
+        let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray, isFavorite: isFavorite, website: website)
         
         viewModel.createPersona(record: record)
     }
