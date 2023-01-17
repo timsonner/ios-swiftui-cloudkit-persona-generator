@@ -11,6 +11,8 @@ import CloudKit
 struct ManagePersonasListView: View {
     @ObservedObject var viewModel = ViewModel()
     @State private var selectedPersona: Persona?
+    @State private var searchText = ""
+    @State private var isFavorited = false
     var body: some View {
         
         NavigationView {
@@ -18,71 +20,71 @@ struct ManagePersonasListView: View {
                 if viewModel.isLoading {
                     ProgressView("Loading Personas...")
                 } else {
-                    ForEach(viewModel.personas) { persona in
-                        
-                        NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                        ForEach(viewModel.personas.filter { persona in
+                            searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
+                        }) { persona in
                             
-                            PersonaRowView(item: persona)
-                                .contextMenu {
-                                    Button(action: {
-                                        selectedPersona = persona
-                                    }) {
-                                        Text("Edit")
-                                        Image(systemName: "pencil")
-                                    }
-                                } // .contextMenu
-                        }
-                    } // End ForEach
-                    .onDelete(perform: deletePersona)
+                            NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                                
+                                PersonaRowView(item: persona)
+                                    .contextMenu {
+                                        Button(action: {
+                                            selectedPersona = persona
+                                        }) {
+                                            Text("Edit")
+                                            Image(systemName: "pencil")
+                                        }
+                                    } // .contextMenu
+                            }
+                        } // End ForEach
+                        .onDelete(perform: deletePersona)
+                    }
+                }
+            
+            .searchable(text: $searchText)
+                    .toolbar {
+                        EditButton()
+                    }
+                    .refreshable {
+                        viewModel.fetchPersonas()
+                    }
+                    .navigationTitle("Manage Personas")
+                    .navigationBarTitleDisplayMode(.large)
+                    .navigationBarItems(leading: Button(action: {
+                        // Present the CreatePersonaView.
+                        viewModel.isEditPersonaViewPresented = true
+                    }) {
+                        Text("Add Persona")
+                        Image(systemName: "plus")
+                    })
+                    .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
+                        EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
+                    }
+                    .sheet(item: $selectedPersona) { persona in
+                        EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
+                    }
+                    .task {
+                        // Fetch data from CloudKit here
+                        viewModel.fetchPersonas()
+                    }
+            }.alert(isPresented: $viewModel.isAlertPresented) {
+                Alert(title: Text("error"), message: Text(viewModel.error))
+            }
+        }
+        
+        // MARK: Helpers
+        func deletePersona(offsets: IndexSet) {
+            withAnimation {
+                // Get the index of the persona to delete.
+                let index = offsets.first!
+                // Get the persona to delete.
+                let persona = viewModel.personas[index]
+                // Delete the persona from CloudKit.
+                DispatchQueue.main.async {
+                    viewModel.deletePersona(persona: persona)
                 }
             }
-            .toolbar {
-                EditButton()
-            }
-            .refreshable {
-                viewModel.fetchPersonas()
-            }
-            .navigationTitle("Manage Personas")
-            .navigationBarTitleDisplayMode(.large)
-            .navigationBarItems(leading: Button(action: {
-                // Present the CreatePersonaView.
-                viewModel.isEditPersonaViewPresented = true
-            }) {
-                Text("Add Persona")
-                Image(systemName: "plus")
-            })
-            .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
-                EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
-            }
-            .sheet(item: $selectedPersona) { persona in
-                EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
-            }
-            .task {
-                // Fetch data from CloudKit here
-                viewModel.fetchPersonas()
-            }
-        }.alert(isPresented: $viewModel.isAlertPresented) {
-            Alert(title: Text("error"), message: Text(viewModel.error))
         }
     }
     
-    // MARK: Helpers
-    func deletePersona(offsets: IndexSet) {
-        withAnimation {
-            // Get the index of the persona to delete.
-            let index = offsets.first!
-            // Get the persona to delete.
-            let persona = viewModel.personas[index]
-            // Delete the persona from CloudKit.
-            DispatchQueue.main.async {
-                viewModel.deletePersona(persona: persona)
-            }
-        }
-    }
-}
-
-struct PersonasListView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManagePersonasListView()
-    }
-}
+    
