@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct PersonaRowView: View {
+    @ObservedObject var viewModel = ViewModel()
+    @State var isItemFavorited: Bool = false
     var item: Persona
+    
     var body: some View {
-        
         HStack {
             Image(uiImage: item.image)
                 .resizable()
@@ -27,14 +29,20 @@ struct PersonaRowView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-
+            Spacer()
+            Button(action: {}) {
+                Image(systemName: self.isItemFavorited ? "star.fill" : "star").foregroundColor(.yellow)
+            }
+            .onTapGesture {
+                isItemFavorited.toggle()
+                viewModel.updatePersona(images: item.images.compactMap { image in
+                    return UIImage(contentsOfFile: image.fileURL!.path)
+                }, image: item.image, title: item.title, name: item.name, headline: item.headline, bio: item.bio, birthdate: item.birthdate, email: item.email, phone: item.phone, recordID: item.recordID!, isFavorite: self.isItemFavorited, website: item.website)
+            }
+            .frame(width: 40, height: 40)
         }
-        
+        .onAppear {
+            self.isItemFavorited = self.item.isFavorite
+        }
     }
 }
-
-//struct PersonaListRowView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PersonaListRowView()
-//    }
-//}

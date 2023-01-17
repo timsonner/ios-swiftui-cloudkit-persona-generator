@@ -17,12 +17,19 @@ struct ManagePersonasListView: View {
         
         NavigationView {
             List {
+                Picker("Filter", selection: $isFavorited) {
+                                    Text("All").tag(false)
+                                    Text("Favorites").tag(true)
+                                }.pickerStyle(SegmentedPickerStyle())
+                
                 if viewModel.isLoading {
                     ProgressView("Loading Personas...")
                 } else {
-                        ForEach(viewModel.personas.filter { persona in
-                            searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
-                        }) { persona in
+                    ForEach(viewModel.personas.filter { persona in
+                                            searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
+                                        }.filter { persona in
+                                            isFavorited ? persona.isFavorite : true
+                                        }) { persona in
                             
                             NavigationLink(destination: PersonaDetailView(persona: persona)) {
                                 
