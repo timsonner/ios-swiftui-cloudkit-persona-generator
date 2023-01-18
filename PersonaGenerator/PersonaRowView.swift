@@ -32,6 +32,8 @@ struct PersonaRowView: View {
             Spacer()
             Button(action: {}) {
                 Image(systemName: self.isItemFavorited ? "star.fill" : "star").foregroundColor(.yellow)
+                    .rotationEffect(.degrees(isItemFavorited ? 360 : 0))
+                    .animation(.easeIn(duration: 0.5), value: isItemFavorited)
             }
             .onTapGesture {
                 isItemFavorited.toggle()

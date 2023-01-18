@@ -14,22 +14,19 @@ struct ManagePersonasListView: View {
     @State private var searchText = ""
     @State private var isFavorited = false
     var body: some View {
-        
         NavigationView {
             List {
-                Picker("Filter", selection: $isFavorited) {
-                                    Text("All").tag(false)
-                                    Text("Favorites").tag(true)
-                                }.pickerStyle(SegmentedPickerStyle())
+
                 
-                if viewModel.isLoading {
-                    ProgressView("Loading Personas...")
-                } else {
-                    ForEach(viewModel.personas.filter { persona in
-                                            searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
-                                        }.filter { persona in
-                                            isFavorited ? persona.isFavorite : true
-                                        }) { persona in
+                    
+                    if viewModel.isLoading {
+                        ProgressView("Loading Personas...")
+                    } else {
+                        ForEach(viewModel.personas.filter { persona in
+                            searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
+                        }.filter { persona in
+                            isFavorited ? persona.isFavorite : true
+                        }) { persona in
                             
                             NavigationLink(destination: PersonaDetailView(persona: persona)) {
                                 
@@ -47,51 +44,60 @@ struct ManagePersonasListView: View {
                         .onDelete(perform: deletePersona)
                     }
                 }
-            
-            .searchable(text: $searchText)
-                    .toolbar {
-                        EditButton()
-                    }
-                    .refreshable {
-                        viewModel.fetchPersonas()
-                    }
-                    .navigationTitle("Manage Personas")
-                    .navigationBarTitleDisplayMode(.large)
-                    .navigationBarItems(leading: Button(action: {
+                
+                .searchable(text: $searchText)
+                .toolbar {
+                    EditButton()
+                }
+                .refreshable {
+                    viewModel.fetchPersonas()
+                }
+                .navigationTitle("Manage Personas")
+                .navigationBarTitleDisplayMode(.large)
+                .navigationBarItems(leading:
+                                        HStack {
+                    Button(action: {
                         // Present the CreatePersonaView.
                         viewModel.isEditPersonaViewPresented = true
                     }) {
                         Text("Add Persona")
                         Image(systemName: "plus")
-                    })
-                    .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
-                        EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
                     }
-                    .sheet(item: $selectedPersona) { persona in
-                        EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
-                    }
-                    .task {
-                        // Fetch data from CloudKit here
-                        viewModel.fetchPersonas()
-                    }
+                    Picker("Filter", selection: $isFavorited) {
+                        Text("All").tag(false)
+                        Text("Favorites").tag(true)
+                    }.pickerStyle(SegmentedPickerStyle())
+                }
+                )
+                .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
+                    EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
+                }
+                .sheet(item: $selectedPersona) { persona in
+                    EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
+                }
+                .task {
+                    // Fetch data from CloudKit here
+                    viewModel.fetchPersonas()
+                }
             }.alert(isPresented: $viewModel.isAlertPresented) {
                 Alert(title: Text("error"), message: Text(viewModel.error))
             }
         }
-        
-        // MARK: Helpers
-        func deletePersona(offsets: IndexSet) {
-            withAnimation {
-                // Get the index of the persona to delete.
-                let index = offsets.first!
-                // Get the persona to delete.
-                let persona = viewModel.personas[index]
-                // Delete the persona from CloudKit.
-                DispatchQueue.main.async {
-                    viewModel.deletePersona(persona: persona)
-                }
+    
+    
+    // MARK: Helpers
+    func deletePersona(offsets: IndexSet) {
+        withAnimation {
+            // Get the index of the persona to delete.
+            let index = offsets.first!
+            // Get the persona to delete.
+            let persona = viewModel.personas[index]
+            // Delete the persona from CloudKit.
+            DispatchQueue.main.async {
+                viewModel.deletePersona(persona: persona)
             }
         }
     }
-    
-    
+}
+
+
