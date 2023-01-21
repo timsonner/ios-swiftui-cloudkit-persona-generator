@@ -52,8 +52,9 @@ struct EditPersonaView: View {
                     .textInputAutocapitalization(.words)
                 TextField("Headline", text: $headline)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                TextField("Bio", text: $bio)
+                TextField("Bio", text: $bio, axis: .vertical)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(40)
                 DatePicker(selection: $birthdate, displayedComponents: .date) {
                     Text("Birthday")
                 }
@@ -88,10 +89,6 @@ struct EditPersonaView: View {
                             }
                         }
                     }
-                    
-                    //                    Button("Edit Gallery") {
-                    //                        showingGalleryImagePicker = true
-                    //                    }.buttonStyle(.borderedProminent)
                     VStack {
                         PhotosPicker (
                             selection: $selectedImage,
@@ -127,8 +124,6 @@ struct EditPersonaView: View {
                                 .progressViewStyle(.circular)
                         }
                     }
-
-                    
                 }// Main Vstack
                 .onAppear {
                     self.title = self.persona.title
@@ -139,9 +134,7 @@ struct EditPersonaView: View {
                     self.birthdate = self.persona.birthdate
                     self.email = self.persona.email
                     self.phone = self.persona.phone
-                    self.images = self.persona.images.compactMap { image in
-                        return UIImage(contentsOfFile: image.fileURL!.path)
-                    }
+                    self.images = self.persona.images
                 }
             }
             .padding(.horizontal)
@@ -153,25 +146,39 @@ struct EditPersonaView: View {
             }
             .navigationTitle("Edit Persona")
             .alert(isPresented: $viewModel.isAlertPresented) {
-                Alert(title: Text("Error"), message: Text(viewModel.error))
+                Alert(title: Text("Error"), message: Text(self.viewModel.error))
             }
         } // scroll view
-        
-        
     }
+    
+    
     // MARK: Helper functions
     func updatePersona() {
         self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
+        
+        if let index = viewModel.personas.firstIndex(where: { $0.recordID == persona.recordID }) {
+            print("matched")
+            // MARK: Update - trying to trigger refresh of ui
+            viewModel.personas[index] = Persona(recordID: persona.recordID, title: persona.title, image: persona.image, name: persona.name, headline: persona.headline, bio: persona.bio, birthdate: persona.birthdate, email: persona.email, phone: persona.phone, images: persona.images, isFavorite: persona.isFavorite, website: persona.website)
+//                                self.fetchPersonas()
+            for persona in viewModel.personas {
+                print(persona.recordID ?? "no-ID")
+            }
+            if viewModel.personas.isEmpty {
+                print("personas is empty")
+            }
+        }
+
     }
     
     func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
-        
-        let record = Persona(recordID: CKRecord.ID(), title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imageAssetArray, isFavorite: isFavorite, website: website)
-        
-        viewModel.createPersona(record: record)
+        // MARK: Create - trying to trigger refresh of ui
+//                    viewModel.personas.append(Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
+
+        viewModel.createPersona(record: Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
     }
 }
 

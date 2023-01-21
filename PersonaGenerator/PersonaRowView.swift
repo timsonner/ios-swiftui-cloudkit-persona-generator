@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct PersonaRowView: View {
-    @ObservedObject var viewModel = ViewModel()
+
     @State var isItemFavorited: Bool = false
     var item: Persona
+    @EnvironmentObject var viewModel: ViewModel
     
     var body: some View {
         HStack {
@@ -30,16 +31,14 @@ struct PersonaRowView: View {
                     .foregroundColor(.secondary)
             }
             Spacer()
-            Button(action: {}) {
+            Button(action: {
+            }) {
                 Image(systemName: self.isItemFavorited ? "star.fill" : "star").foregroundColor(.yellow)
                     .rotationEffect(.degrees(isItemFavorited ? 360 : 0))
                     .animation(.easeIn(duration: 0.5), value: isItemFavorited)
-            }
-            .onTapGesture {
+            }.onTapGesture {
                 isItemFavorited.toggle()
-                viewModel.updatePersona(images: item.images.compactMap { image in
-                    return UIImage(contentsOfFile: image.fileURL!.path)
-                }, image: item.image, title: item.title, name: item.name, headline: item.headline, bio: item.bio, birthdate: item.birthdate, email: item.email, phone: item.phone, recordID: item.recordID!, isFavorite: self.isItemFavorited, website: item.website)
+                viewModel.updatePersona(images: item.images, image: item.image, title: item.title, name: item.name, headline: item.headline, bio: item.bio, birthdate: item.birthdate, email: item.email, phone: item.phone, recordID: item.recordID!, isFavorite: isItemFavorited, website: item.website)
             }
             .frame(width: 40, height: 40)
         }

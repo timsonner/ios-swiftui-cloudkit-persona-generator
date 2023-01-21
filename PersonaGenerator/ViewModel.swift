@@ -12,22 +12,24 @@ class ViewModel: ObservableObject {
     // MARK: - Properties
     private let privateDatabase = CKContainer.default().privateCloudDatabase
     
+    @Published var error: String = "Default error message."
     @Published var personas: [Persona] = []
-    @Published var persona: Persona?
     @Published var isLoading: Bool = false
     @Published var isEditPersonaViewPresented: Bool = false
-    @Published var error: String = "Fuuuuck"
     @Published var isAlertPresented = false
     
+    
     func fetchPersonas() {
-        // Fetch data from CloudKit here
+        print("fetchPersonas()")
         self.isLoading = true
         let query = CKQuery(recordType: "Persona", predicate: NSPredicate(value: true))
         privateDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 0) { (result) in
             switch result {
             case .success(let matchResults):
                 DispatchQueue.main.async {
-                    self.personas = matchResults.matchResults.compactMap { recordResult in
+                    self.personas.removeAll()
+                    
+                    matchResults.matchResults.forEach { recordResult in
                         switch recordResult.1 {
                         case .success(let record):
                             guard let title = record["title"] as? String,
@@ -40,15 +42,32 @@ class ViewModel: ObservableObject {
                                   let phone = record["phone"] as? String,
                                   let isFavorite = record["isFavorite"] as? Bool,
                                   let website = record["website"] as? String,
-                                  let images = record["images"] as? [CKAsset] else {
-                                return nil
+                                  let images = record["images"] as? [CKAsset]
+                            else {
+                                print("Some fields are missing or have the wrong type.")
+                                return
                             }
-                            // Load the image from the CKAsset
-                            let image = UIImage(contentsOfFile: imageAsset.fileURL!.path)
-
-                            self.isLoading = false
                             
-                            return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
+                            // Check if the imageAsset fileURL is not nil
+                            guard let fileURL = imageAsset.fileURL else {
+                                print("imageAsset fileURL is missing.")
+                                return
+                            }
+                            
+                            // Load the image from the CKAsset
+                            guard let image = UIImage(contentsOfFile: fileURL.path) else {
+                                print("Error loading image from fileURL.")
+                                return
+                            }
+                            guard let imageAsset = record["image"] as? CKAsset, let _ = imageAsset.fileURL else {
+                                print("'image' field is not of CKAsset type or 'fileURL' property is missing.")
+                                return
+                            }
+                            let imagesArray = images.compactMap { UIImage(contentsOfFile: $0.fileURL!.path) }
+                            
+                            let persona = Persona(recordID: record.recordID, title: title, image: image, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imagesArray, isFavorite: isFavorite, website: website)
+                            
+                            self.personas.append(persona)
                             
                         case .failure(let error):
                             DispatchQueue.main.async {
@@ -56,16 +75,17 @@ class ViewModel: ObservableObject {
                                 self.isAlertPresented = true
                                 print(error)
                             }
-                            return nil
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        for persona in self.personas {
+                            print("personas after privateDatabase.fetch(): \(persona.title)")
                         }
                     }
                 }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.error = error.localizedDescription
-                    self.isAlertPresented = true
-                    print(error)
-                }
+            case .failure(_):
+                print("switch failure in fetchPersonas()")
             }
         }
     }
@@ -81,6 +101,9 @@ class ViewModel: ObservableObject {
                 // Remove the deleted record from the `personas` array
                 DispatchQueue.main.async {
                     self.personas.removeAll(where: { $0.recordID == recordID })
+                    for persona in self.personas {
+                        print("list items after delete! \(persona.title)")
+                    }
                 }
             }
         }
@@ -88,6 +111,7 @@ class ViewModel: ObservableObject {
     
     func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID, isFavorite: Bool, website: String) {
         
+        fetchPersonas()
         self.isLoading = true
         var imageAssetArray: [CKAsset] = []
         
@@ -97,8 +121,6 @@ class ViewModel: ObservableObject {
         
         let imageAsset = image?.convertToCKAsset()
         // Retrieve the existing record from CloudKit
-        let privateDatabase = CKContainer.default().privateCloudDatabase
-        let recordID = recordID
         privateDatabase.fetch(withRecordID: recordID) { (record, error) in
             
             if let error = error {
@@ -123,15 +145,16 @@ class ViewModel: ObservableObject {
             record["images"] = imageAssetArray
             record["image"] = imageAsset
             record["title"] = title
-            record["name"] = name as CKRecordValue
-            record["headline"] = headline as CKRecordValue
-            record["bio"] = bio as CKRecordValue
-            record["birthdate"] = birthdate as CKRecordValue
-            record["email"] = email as CKRecordValue
-            record["phone"] = phone as CKRecordValue
+            record["name"] = name
+            record["headline"] = headline
+            record["bio"] = bio
+            record["birthdate"] = birthdate
+            record["email"] = email
+            record["phone"] = phone
+            record["website"] = website
             record["isFavorite"] = isFavorite
             
-            privateDatabase.save(record) { (savedRecord, error) in
+            self.privateDatabase.save(record) { (savedRecord, error) in
                 if error != nil {
                     DispatchQueue.main.async {
                         self.error = error!.localizedDescription
@@ -140,36 +163,60 @@ class ViewModel: ObservableObject {
                     }
                 } else {
                     DispatchQueue.main.async {
-                        self.persona?.recordID = savedRecord?.recordID
-                        self.isLoading = false
+                        // Update the persona object in the personas array
+                        if let index = self.personas.firstIndex(where: { $0.recordID == recordID }) {
+                            print("matched")
+                            self.personas[index] = Persona(recordID: recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
+//                                self.fetchPersonas()
+                            for persona in self.personas {
+                                print("Personas after update\(persona.title)" ?? "no-ID")
+                            }
+                            if self.personas.isEmpty {
+                                print("personas is empty")
+                            }
+                        }
                     }
                 }
+//                 MARK: this borks/unborkst the save button disabled/loading
+//                                DispatchQueue.main.async {
+//                                    self.isLoading = false
+//                                    self.isEditPersonaViewPresented = false
+//                                }
             }
+        }
+        //         MARK: this makes the star spinner animation pretty
+        DispatchQueue.main.async {
+//            self.fetchPersonas()
+            self.isLoading = false
+            self.isEditPersonaViewPresented = false
         }
     } // updatePersona
     
+    // MARK: create
     func createPersona(record: Persona) {
-        self.isLoading = true
-        privateDatabase.save(record.record) { (savedRecord, error) in
-            
-            if error != nil {
-                DispatchQueue.main.async {
-                    self.error = error!.localizedDescription
-                    self.isAlertPresented = true
-                    print("Record Not Saved")
-                    print(error as Any)
-                }
-            } else {
-                print("Record Saved")
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                }
-            }
-        }
-    }
+//        fetchPersonas()
+           self.isLoading = true
+           privateDatabase.save(record.record) { (savedRecord, error) in
+               
+               if error != nil {
+                   DispatchQueue.main.async {
+                       self.error = error!.localizedDescription
+                       self.isAlertPresented = true
+                       print("Record Not Saved")
+                       print(error as Any)
+                   }
+               } else {
+                   print("Record Saved")
+                   print("personas array after save: \(self.personas)") // MARK: why is this empty here?
+                       self.personas.append(record)
+                       self.isLoading = false
+               }
+           }
+       }
+    
     
     private let url = URL(string: "https://thispersondoesnotexist.com/image")!
-        
+    
     func fetchImage(completion: @escaping (UIImage?, Error?) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data, error == nil else {

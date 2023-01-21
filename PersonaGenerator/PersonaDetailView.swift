@@ -30,7 +30,6 @@ struct PersonaDetailView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            
             Section {
                 VStack(alignment: .leading) {
                     Text("Bio")
@@ -55,6 +54,14 @@ struct PersonaDetailView: View {
                     }
                     
                     HStack {
+                        Text("Website:")
+                            .font(.subheadline)
+                        Spacer()
+                        Text(persona.website)
+                            .font(.subheadline)
+                    }
+                    
+                    HStack {
                         Text("Phone:")
                             .font(.subheadline)
                         Spacer()
@@ -71,7 +78,7 @@ struct PersonaDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 16) {
                             ForEach(persona.images, id: \.self) { image in
-                                Image(uiImage: UIImage(contentsOfFile: image.fileURL!.path)!)
+                                Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 200, height: 200)
@@ -88,15 +95,8 @@ struct PersonaDetailView: View {
         }) {
             Text("Edit")
         })
-        .sheet(isPresented: $isEditPersonaViewPresented) {
-            EditPersonaView(isSheetShowing: $isEditPersonaViewPresented, persona: persona)
+        .sheet(isPresented: self.$isEditPersonaViewPresented) {
+            EditPersonaView(isSheetShowing: self.$isEditPersonaViewPresented, persona: persona)
         }
     }
 }
-
-
-//struct PersonaDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PersonaDetailView()
-//    }
-//}

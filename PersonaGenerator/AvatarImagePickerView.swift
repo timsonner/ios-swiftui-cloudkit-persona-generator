@@ -9,9 +9,9 @@ import SwiftUI
 import PhotosUI
 
 struct AvatarImagePickerView: View {
-    @ObservedObject var viewModel = ViewModel()
+    @EnvironmentObject var viewModel: ViewModel
     @Binding var image: UIImage?
-    @State private var sourceType: UIImagePickerController.SourceType?
+    @State private var sourceType: 	UIImagePickerController.SourceType?
     @State var selectedImage: [PhotosPickerItem] = []
     @State private var isPresentingImagePicker = false
     @State private var isLoadingImage = false

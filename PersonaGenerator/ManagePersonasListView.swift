@@ -9,16 +9,13 @@ import SwiftUI
 import CloudKit
 
 struct ManagePersonasListView: View {
-    @ObservedObject var viewModel = ViewModel()
+    @EnvironmentObject var viewModel: ViewModel
     @State private var selectedPersona: Persona?
     @State private var searchText = ""
     @State private var isFavorited = false
     var body: some View {
         NavigationView {
             List {
-
-                
-                    
                     if viewModel.isLoading {
                         ProgressView("Loading Personas...")
                     } else {
@@ -27,9 +24,7 @@ struct ManagePersonasListView: View {
                         }.filter { persona in
                             isFavorited ? persona.isFavorite : true
                         }) { persona in
-                            
                             NavigationLink(destination: PersonaDetailView(persona: persona)) {
-                                
                                 PersonaRowView(item: persona)
                                     .contextMenu {
                                         Button(action: {
@@ -43,7 +38,7 @@ struct ManagePersonasListView: View {
                         } // End ForEach
                         .onDelete(perform: deletePersona)
                     }
-                }
+            }
                 
                 .searchable(text: $searchText)
                 .toolbar {
@@ -66,6 +61,7 @@ struct ManagePersonasListView: View {
                     Picker("Filter", selection: $isFavorited) {
                         Text("All").tag(false)
                         Text("Favorites").tag(true)
+                            
                     }.pickerStyle(SegmentedPickerStyle())
                 }
                 )
@@ -77,13 +73,13 @@ struct ManagePersonasListView: View {
                 }
                 .task {
                     // Fetch data from CloudKit here
+                    print("fetchPersonas from list view")
                     viewModel.fetchPersonas()
                 }
             }.alert(isPresented: $viewModel.isAlertPresented) {
-                Alert(title: Text("error"), message: Text(viewModel.error))
+                Alert(title: Text("An error has happened..."), message: Text(viewModel.error))
             }
         }
-    
     
     // MARK: Helpers
     func deletePersona(offsets: IndexSet) {
