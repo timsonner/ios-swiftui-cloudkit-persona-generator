@@ -22,20 +22,17 @@ class ViewModel: ObservableObject {
         print("fetchPersonas()")
         // MARK: Clear array before fetch
         self.personas.removeAll()
-        
         self.isLoading = true
         let query = CKQuery(recordType: "Persona", predicate: NSPredicate(value: true))
         privateDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 0) { (result) in
             switch result {
             case .success(let matchResults):
                 DispatchQueue.main.async {
-                    self.personas.removeAll()
+                    self.personas.removeAll() // <-- Clear the personas array again to ensure that it's empty before adding new data
                     matchResults.matchResults.forEach { recordResult in
                         switch recordResult.1 {
                         case .success(let record):
-                            
                             DispatchQueue.main.async {
-                                
                                 guard let title = record["title"] as? String,
                                       let imageAsset = record["image"] as? CKAsset,
                                       let name = record["name"] as? String,
@@ -51,53 +48,35 @@ class ViewModel: ObservableObject {
                                     print("Some fields are missing or have the wrong type.")
                                     return
                                 }
-                                
-                                // Check if the imageAsset fileURL is not nil
                                 guard let fileURL = imageAsset.fileURL else {
                                     print("imageAsset fileURL is missing.")
                                     return
                                 }
-                                
-                                // Load the image from the CKAsset
                                 guard let image = UIImage(contentsOfFile: fileURL.path) else {
                                     print("Error loading image from fileURL.")
                                     return
                                 }
-                                guard let imageAsset = record["image"] as? CKAsset, let _ = imageAsset.fileURL else {
-                                    print("'image' field is not of CKAsset type or 'fileURL' property is missing.")
-                                    return
-                                }
                                 let imagesArray = images.compactMap { UIImage(contentsOfFile: $0.fileURL!.path) }
-                                
                                 let persona = Persona(recordID: record.recordID, title: title, image: image, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: imagesArray, isFavorite: isFavorite, website: website)
-                                
                                 self.personas.append(persona)
                             }
-                            
                         case .failure(let error):
-                            DispatchQueue.main.async {
-                                self.error = error.localizedDescription
-                                self.isAlertPresented = true
-                                print(error)
-                            }
-                        } // end of switch
-                    } // end of foreach
-                    DispatchQueue.main.async {
-                        self.isLoading = false
-                        // MARK: pesonas has value
-                        for persona in self.personas {
-                            print("personas after privateDatabase.fetch(): \(persona.title)")
+                            print(error)
                         }
                     }
-                    print("made it 1")
-                } // end of dispatch queue
-            case .failure(_):
-                print("switch failure in fetchPersonas()")
-            } // end of switch
-            print("made it 2")
-        } // end of fetch
-        print("made it 3")
-    } // end of func
+                    self.isLoading = false
+                }
+            case .failure(let error):
+                print(error)
+                DispatchQueue.main.async {
+                    self.error = error.localizedDescription
+                    self.isAlertPresented = true
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+
     
     func deletePersona(persona: Persona) {
         privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
@@ -120,7 +99,7 @@ class ViewModel: ObservableObject {
     
     func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID, isFavorite: Bool, website: String) {
         self.isLoading = true
-//        self.fetchPersonas()
+        //        self.fetchPersonas()
         var imageAssetArray: [CKAsset] = []
         
         for image in images {
@@ -168,11 +147,12 @@ class ViewModel: ObservableObject {
                     }
                 } else {
                     DispatchQueue.main.async {
-                        // Update the persona object in the personas array
+                        // MARK: Update the UI here...
                         if let index = self.personas.firstIndex(where: { $0.recordID == recordID }) {
                             print("matched")
+                            
                             self.personas[index] = Persona(recordID: recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
-                            //                                self.fetchPersonas()
+                                  
                             for persona in self.personas {
                                 print("Personas after update: \(persona.title)" ?? "(empty title)")
                             }
@@ -190,7 +170,6 @@ class ViewModel: ObservableObject {
                             }
                             print("tried to match: \(recordID)")
                         }
-                        
                     }
                 }
             }
@@ -200,7 +179,7 @@ class ViewModel: ObservableObject {
             self.isEditPersonaViewPresented = false
         }
     }
-
+    
     // MARK: create
     func createPersona(record: Persona) {
         self.isLoading = true
@@ -221,8 +200,9 @@ class ViewModel: ObservableObject {
                 else {
                     DispatchQueue.main.async {
                         print("Record Saved")
+                        // MARK: why is personas empty here?
                         for persona in self.personas {
-                            print("personas before privateDatabase.save(): \(persona.title)") // MARK: why is this empty here?
+                            print("personas before privateDatabase.save(): \(persona.title)")
                         }
                         self.personas.append(record)
                         for persona in self.personas {

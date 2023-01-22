@@ -155,22 +155,13 @@ struct EditPersonaView: View {
     
     // MARK: Helper functions
     func updatePersona() {
-        self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
-        
-        if let index = viewModel.personas.firstIndex(where: { $0.recordID == persona.recordID }) {
-            print("matched")
-            // MARK: Update - trying to trigger refresh of ui
-            viewModel.personas[index] = Persona(recordID: persona.recordID, title: persona.title, image: persona.image, name: persona.name, headline: persona.headline, bio: persona.bio, birthdate: persona.birthdate, email: persona.email, phone: persona.phone, images: persona.images, isFavorite: persona.isFavorite, website: persona.website)
-            //                                self.fetchPersonas()
-            for persona in viewModel.personas {
-                print(persona.recordID ?? "no-ID")
-            }
-            if viewModel.personas.isEmpty {
-                print("personas is empty")
-            }
+        DispatchQueue.main.async {
+            viewModel.fetchPersonas()
+            
+            self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
+            
         }
     }
-    
     func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
