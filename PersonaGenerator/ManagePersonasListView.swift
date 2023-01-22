@@ -11,8 +11,10 @@ import CloudKit
 struct ManagePersonasListView: View {
     @EnvironmentObject var viewModel: ViewModel
     @State private var selectedPersona: Persona?
-    @State private var searchText = ""
-    @State private var isFavorited = false
+    @State private var searchText: String = ""
+    @State private var isFavorited: Bool = false
+    @State private var isFirstLoad: Bool = true
+    
     var body: some View {
         NavigationView {
             List {
@@ -39,7 +41,6 @@ struct ManagePersonasListView: View {
                         .onDelete(perform: deletePersona)
                     }
             }
-                
                 .searchable(text: $searchText)
                 .toolbar {
                     EditButton()
@@ -72,9 +73,11 @@ struct ManagePersonasListView: View {
                     EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
                 }
                 .task {
-                    // Fetch data from CloudKit here
-                    print("fetchPersonas from list view")
-                    viewModel.fetchPersonas()
+                    if isFirstLoad {
+                        print("fetchPersonas() called from list view")
+                        viewModel.fetchPersonas()
+                        isFirstLoad = false
+                    }
                 }
             }.alert(isPresented: $viewModel.isAlertPresented) {
                 Alert(title: Text("An error has happened..."), message: Text(viewModel.error))

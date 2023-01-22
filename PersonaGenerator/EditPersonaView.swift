@@ -115,6 +115,7 @@ struct EditPersonaView: View {
                                 isSheetShowing = false
                             } else {
                                 updatePersona()
+                                    isSheetShowing = false
                             }
                         }.buttonStyle(.borderedProminent)
                             .disabled(viewModel.isLoading)
@@ -160,7 +161,7 @@ struct EditPersonaView: View {
             print("matched")
             // MARK: Update - trying to trigger refresh of ui
             viewModel.personas[index] = Persona(recordID: persona.recordID, title: persona.title, image: persona.image, name: persona.name, headline: persona.headline, bio: persona.bio, birthdate: persona.birthdate, email: persona.email, phone: persona.phone, images: persona.images, isFavorite: persona.isFavorite, website: persona.website)
-//                                self.fetchPersonas()
+            //                                self.fetchPersonas()
             for persona in viewModel.personas {
                 print(persona.recordID ?? "no-ID")
             }
@@ -168,16 +169,16 @@ struct EditPersonaView: View {
                 print("personas is empty")
             }
         }
-
     }
     
     func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
+        
         // MARK: Create - trying to trigger refresh of ui
-//                    viewModel.personas.append(Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
-
+        viewModel.personas.append(Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
+        
         viewModel.createPersona(record: Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
     }
 }
