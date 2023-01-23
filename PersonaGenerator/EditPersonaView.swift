@@ -111,11 +111,12 @@ struct EditPersonaView: View {
                                 createPersona()
                                 print("User created new...")
                                 print("clickery")
-                                //                                viewModel.isEditPersonaViewPresented = false
                                 isSheetShowing.toggle()
                                 return
                             } else {
                                 print("User edited existing...")
+                                isSheetShowing.toggle()
+                                
                                 updatePersona()
                             }
                         }
@@ -183,7 +184,7 @@ struct EditPersonaView: View {
             print("tried to match: \(String(describing: persona.recordID))")
         }
     }
-
+    
     
     
     func createPersona() {
