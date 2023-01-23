@@ -15,7 +15,9 @@ class ViewModel: ObservableObject {
     @Published var error: String = "Default error message."
     @Published var personas: [Persona] = []
     @Published var isLoading: Bool = false
-    @Published var isEditPersonaViewPresented: Bool = false
+//    @Published var selectedPersona: Persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
+//    @Published var isEditPersonaViewPresented: Bool = false
+    @Published var isCreatePersonaViewPresented: Bool = false
     @Published var isAlertPresented = false
     
     func fetchPersonas() {
@@ -28,7 +30,8 @@ class ViewModel: ObservableObject {
             switch result {
             case .success(let matchResults):
                 DispatchQueue.main.async {
-                    self.personas.removeAll() // <-- Clear the personas array again to ensure that it's empty before adding new data
+                    // MARK: Clear the personas array again to ensure that it's empty before adding new data
+                    self.personas.removeAll()
                     matchResults.matchResults.forEach { recordResult in
                         switch recordResult.1 {
                         case .success(let record):
@@ -76,15 +79,18 @@ class ViewModel: ObservableObject {
             }
         }
     }
-
     
     func deletePersona(persona: Persona) {
         privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
             if error != nil {
-                // Handle error
-                self.error = error!.localizedDescription
-                self.isAlertPresented = true
-                print(error!)
+                DispatchQueue.main.async {
+                    
+                    
+                    // Handle error
+                    self.error = error!.localizedDescription
+                    self.isAlertPresented = true
+                    print(error!)
+                }
             } else {
                 // Remove the deleted record from the `personas` array
                 DispatchQueue.main.async {
@@ -98,10 +104,13 @@ class ViewModel: ObservableObject {
     }
     
     func updatePersona(images: [UIImage], image: UIImage?, title: String, name: String, headline: String, bio: String, birthdate: Date, email: String, phone: String, recordID: CKRecord.ID, isFavorite: Bool, website: String) {
-        self.isLoading = true
-        //        self.fetchPersonas()
-        var imageAssetArray: [CKAsset] = []
         
+        self.isLoading = true
+        
+        var imageAssetArray: [CKAsset] = []
+        for persona in self.personas {
+            print("Personas in viewmodel before update: \(persona.title)")
+        }
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
@@ -145,76 +154,48 @@ class ViewModel: ObservableObject {
                         self.isAlertPresented = true
                         print(error as Any)
                     }
-                } else {
-                    DispatchQueue.main.async {
-                        // MARK: Update the UI here...
-                        if let index = self.personas.firstIndex(where: { $0.recordID == recordID }) {
-                            print("matched")
-                            
-                            self.personas[index] = Persona(recordID: recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
-                                  
-                            for persona in self.personas {
-                                print("Personas after update: \(persona.title)" ?? "(empty title)")
-                            }
-                            // MARK: Why is this empty?
-                            if self.personas.isEmpty {
-                                print("personas is empty")
-                            }
-                        } else {
-                            print("record not updated")
-                            for persona in self.personas {
-                                print(persona.recordID)
-                            }
-                            if self.personas.isEmpty {
-                                print("personas is empty")
-                            }
-                            print("tried to match: \(recordID)")
-                        }
-                    }
                 }
             }
+            
         }
         DispatchQueue.main.async {
             self.isLoading = false
-            self.isEditPersonaViewPresented = false
+//            self.isEditPersonaViewPresented = false
         }
     }
     
     // MARK: create
     func createPersona(record: Persona) {
+        
         self.isLoading = true
         
-        DispatchQueue.main.async {
-            self.fetchPersonas()
+        // MARK: Why is self empty here?
+        for persona in self.personas {
+            print("personas before create: \(persona.title)")
+        }
+        
+        privateDatabase.save(record.record) { (savedRecord, error) in
             
-            self.privateDatabase.save(record.record) { (savedRecord, error) in
-                
-                if error != nil {
-                    DispatchQueue.main.async {
-                        self.error = error!.localizedDescription
-                        self.isAlertPresented = true
-                        print("Record Not Saved")
-                        print(error as Any)
-                    }
+            if error != nil {
+                DispatchQueue.main.async {
+                    self.error = error!.localizedDescription
+                    self.isAlertPresented = true
+                    print("Record Not Saved")
+                    print(error as Any)
                 }
-                else {
-                    DispatchQueue.main.async {
-                        print("Record Saved")
-                        // MARK: why is personas empty here?
-                        for persona in self.personas {
-                            print("personas before privateDatabase.save(): \(persona.title)")
-                        }
-                        self.personas.append(record)
-                        for persona in self.personas {
-                            print("personas after privateDatabase.save(): \(persona.title)") // MARK: this only has the recently created record
-                        }
-                        self.isLoading = false
-                    } // end of dispatch queue
-                } // end of else
-            } // end of fetch
-        } // end of dispatch queue
+            } else {
+                print("Record Saved")
+            }
+        }
+        DispatchQueue.main.async {
+            self.personas.append(record)
+            self.isLoading = false
+            self.isCreatePersonaViewPresented = false
+            for persona in self.personas {
+                print("personas after create: \(persona.title)")
+            }
+        }
     }
-    
     
     private let url = URL(string: "https://thispersondoesnotexist.com/image")!
     

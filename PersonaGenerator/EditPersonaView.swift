@@ -9,16 +9,13 @@ import SwiftUI
 import CloudKit
 import _PhotosUI_SwiftUI
 
-// text input  auto cpitalization .word
-
 struct EditPersonaView: View {
     //MARK: - View specific properties
-    @ObservedObject var viewModel = ViewModel()
-    @Binding var isSheetShowing: Bool // Bool to dismiss sheet
+    @EnvironmentObject var viewModel: ViewModel
+    @Binding var isSheetShowing: Bool
     @State var selectedImage: [PhotosPickerItem] = []
     
-    
-    @State var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
+    var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
     
     @State var isNew = false
     @State private var showingImagePicker = false
@@ -112,14 +109,20 @@ struct EditPersonaView: View {
                         Button("Save") {
                             if isNew {
                                 createPersona()
-                                isSheetShowing = false
+                                print("User created new...")
+                                print("clickery")
+                                //                                viewModel.isEditPersonaViewPresented = false
+                                isSheetShowing.toggle()
+                                return
                             } else {
+                                print("User edited existing...")
                                 updatePersona()
-                                    isSheetShowing = false
                             }
-                        }.buttonStyle(.borderedProminent)
-                            .disabled(viewModel.isLoading)
-                            .tint(.green)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(viewModel.isLoading)
+                        .tint(.green)
+                        
                         if viewModel.isLoading {
                             ProgressView("Saving...")
                                 .progressViewStyle(.circular)
@@ -136,6 +139,10 @@ struct EditPersonaView: View {
                     self.email = self.persona.email
                     self.phone = self.persona.phone
                     self.images = self.persona.images
+                    // MARK: This bit here seems essential to populate the array.
+                    if self.viewModel.personas.isEmpty {
+                        self.viewModel.fetchPersonas()
+                    }
                 }
             }
             .padding(.horizontal)
@@ -152,26 +159,44 @@ struct EditPersonaView: View {
         } // scroll view
     }
     
-    
-    // MARK: Helper functions
     func updatePersona() {
-        DispatchQueue.main.async {
-            viewModel.fetchPersonas()
-            
-            self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
-            
+        self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
+        
+        if viewModel.personas.isEmpty {
+            print("empty personas array in updatePersona helper on edit view.")
+        }
+        // MARK: Update the UI here...
+        if let index = viewModel.personas.firstIndex(where: { $0.recordID == persona.recordID }) {
+            print("Update happened on \(viewModel.personas[index].title)")
+            viewModel.personas[index] = Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
+            for persona in viewModel.personas {
+                print("Personas in viewmodel after update: \(persona.title)")
+            }
+        } else {
+            print("record not updated")
+            for persona in viewModel.personas {
+                print(persona.recordID ?? "no record id")
+            }
+            if viewModel.personas.isEmpty {
+                print("personas is empty")
+            }
+            print("tried to match: \(String(describing: persona.recordID))")
         }
     }
+
+    
+    
     func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
         
-        // MARK: Create - trying to trigger refresh of ui
-        viewModel.personas.append(Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
-        
         viewModel.createPersona(record: Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
+        
     }
+    
+    
+    
 }
 
 

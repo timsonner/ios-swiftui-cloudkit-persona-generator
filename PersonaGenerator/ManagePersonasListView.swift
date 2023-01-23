@@ -14,6 +14,7 @@ struct ManagePersonasListView: View {
     @State private var searchText: String = ""
     @State private var isFavorited: Bool = false
     @State private var isFirstLoad: Bool = true
+    @State private var isEditPersonaViewPresented = false
     
     var body: some View {
         NavigationView {
@@ -29,12 +30,7 @@ struct ManagePersonasListView: View {
                             NavigationLink(destination: PersonaDetailView(persona: persona)) {
                                 PersonaRowView(item: persona)
                                     .contextMenu {
-                                        Button(action: {
-                                            selectedPersona = persona
-                                        }) {
-                                            Text("Edit")
-                                            Image(systemName: "pencil")
-                                        }
+                                                    
                                     } // .contextMenu
                             }
                         } // End ForEach
@@ -54,7 +50,7 @@ struct ManagePersonasListView: View {
                                         HStack {
                     Button(action: {
                         // Present the CreatePersonaView.
-                        viewModel.isEditPersonaViewPresented = true
+                        viewModel.isCreatePersonaViewPresented = true
                     }) {
                         Text("Add Persona")
                         Image(systemName: "plus")
@@ -66,12 +62,12 @@ struct ManagePersonasListView: View {
                     }.pickerStyle(SegmentedPickerStyle())
                 }
                 )
-                .sheet(isPresented: $viewModel.isEditPersonaViewPresented) {
-                    EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, isNew: true)
+                .sheet(isPresented: $viewModel.isCreatePersonaViewPresented) {
+                    EditPersonaView(isSheetShowing: $viewModel.isCreatePersonaViewPresented, isNew: true)
                 }
-                .sheet(item: $selectedPersona) { persona in
-                    EditPersonaView(isSheetShowing: $viewModel.isEditPersonaViewPresented, persona: persona)
-                }
+//                .sheet(item: $selectedPersona) { persona in
+//                    EditPersonaView(isSheetShowing: $isEditPersonaViewPresented, persona: persona)
+//                }
                 .task {
                     if isFirstLoad {
                         print("fetchPersonas() called from list view")
