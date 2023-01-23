@@ -28,7 +28,7 @@ struct ManagePersonasListView: View {
                         isFavorited ? persona.isFavorite : true
                     }) { persona in
                         NavigationLink(destination: PersonaDetailView(persona: persona)) {
-                            PersonaRowView(item: persona)
+                            PersonaRowView(persona: persona)
                                 .contextMenu {
                                     Button(action: {
                                         selectedPersona = persona
