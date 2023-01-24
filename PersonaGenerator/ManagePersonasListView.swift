@@ -9,73 +9,96 @@ import SwiftUI
 import CloudKit
 
 struct ManagePersonasListView: View {
-    
-    
-    @State private var personas: [Persona] = []
+    @EnvironmentObject var viewModel: ViewModel
+    @State private var selectedPersona: Persona?
+    @State private var searchText: String = ""
+    @State private var isFavorited: Bool = false
+    @State private var isFirstLoad: Bool = true
+    @State private var isEditPersonaViewPresented = false
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(personas) { persona in
-                    NavigationLink(destination: EditPersonaView(persona: persona)) {
-                        Text(persona.title)
-                    }
-                    .contextMenu {
-                        Button(action: {
-                            // Delete the record from CloudKit
-                            let privateDatabase = CKContainer.default().privateCloudDatabase
-                            privateDatabase.delete(withRecordID: persona.recordID!) { (recordID, error) in
-                                if error != nil {
-                                    // Handle error
-                                } else {
-                                    // Remove the deleted record from the `personas` array
-                                    self.personas.removeAll(where: { $0.recordID == recordID })
-                                }
-                            }
-                        }) {
-                            Text("Delete")
-                            Image(systemName: "trash")
+                if viewModel.isLoading {
+                    ProgressView("Loading Personas...")
+                } else {
+                    ForEach(viewModel.personas.filter { persona in
+                        searchText.isEmpty ? true : persona.title.lowercased().contains(searchText.lowercased())
+                    }.filter { persona in
+                        isFavorited ? persona.isFavorite : true
+                    }) { persona in
+                        NavigationLink(destination: PersonaDetailView(persona: persona)) {
+                            PersonaRowView(persona: persona)
+                                .contextMenu {
+                                    Button(action: {
+                                        selectedPersona = persona
+                                        isEditPersonaViewPresented = true
+                                    }) {
+                                        Text("Edit")
+                                        Image(systemName: "pencil")
+                                    }
+                                } // .contextMenu //
                         }
-                    }
+                    } // End ForEach
+                    .onDelete(perform: deletePersona)
                 }
             }
+            .searchable(text: $searchText)
+            .toolbar {
+                EditButton()
+            }
+            .refreshable {
+                viewModel.fetchPersonas()
+            }
             .navigationTitle("Manage Personas")
-            .onAppear {
-                // Fetch data from CloudKit here
-                let privateDatabase = CKContainer.default().privateCloudDatabase
-                let query = CKQuery(recordType: "Persona", predicate: NSPredicate(value: true))
-                privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
-                    if error != nil {
-                        // Handle error
-                    } else {
-                        self.personas = records!.compactMap { record in
-                            guard let title = record["title"] as? String,
-                                  let imageAsset = record["image"] as? CKAsset,
-                                  let name = record["name"] as? String,
-                                  let headline = record["headline"] as? String,
-                                  let bio = record["bio"] as? String,
-                                  let birthdate = record["birthdate"] as? Date,
-                                  let email = record["email"] as? String,
-                                  let phone = record["phone"] as? String,
-                                  let images = record["images"] as? [CKAsset] else {
-                                return nil
-                            }
-                            // Load the image from the CKAsset
-                            let image = UIImage(contentsOfFile: imageAsset.fileURL!.path)
-                            return Persona(recordID: record.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images)
-                        }
-                        
-                    }
+            .navigationBarTitleDisplayMode(.large)
+            .navigationBarItems(leading:
+                                    HStack {
+                Button(action: {
+                    // Present the CreatePersonaView.
+                    viewModel.isCreatePersonaViewPresented = true
+                }) {
+                    Text("Add Persona")
+                    Image(systemName: "plus")
                 }
+                Picker("Filter", selection: $isFavorited) {
+                    Text("All").tag(false)
+                    Text("Favorites").tag(true)
+                    
+                }.pickerStyle(SegmentedPickerStyle())
+            }
+            )
+            .sheet(isPresented: $viewModel.isCreatePersonaViewPresented) {
+                EditPersonaView(isSheetShowing: $viewModel.isCreatePersonaViewPresented, isNew: true)
+            }
+                            .sheet(item: $selectedPersona) { persona in
+                                EditPersonaView(isSheetShowing: $isEditPersonaViewPresented, persona: persona)
+                            }
+            .task {
+                if isFirstLoad {
+                    print("fetchPersonas() called from list view")
+                    viewModel.fetchPersonas()
+                    isFirstLoad = false
+                }
+            }
+        }.alert(isPresented: $viewModel.isAlertPresented) {
+            Alert(title: Text("An error has happened..."), message: Text(viewModel.error))
+        }
+    }
+    
+    // MARK: Helpers
+    func deletePersona(offsets: IndexSet) {
+        withAnimation {
+            // Get the index of the persona to delete.
+            let index = offsets.first!
+            // Get the persona to delete.
+            let persona = viewModel.personas[index]
+            // Delete the persona from CloudKit.
+            DispatchQueue.main.async {
+                viewModel.deletePersona(persona: persona)
             }
         }
     }
 }
 
 
-
-struct PersonasListView_Previews: PreviewProvider {
-    static var previews: some View {
-        ManagePersonasListView()
-    }
-}

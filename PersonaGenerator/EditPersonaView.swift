@@ -1,25 +1,32 @@
+//
+//  EditPersonaView.swift
+//  Persona Generator
+//
+//  Created by Timothy Sonner on 12/21/22.
+//
+
 import SwiftUI
 import CloudKit
-
-
+import _PhotosUI_SwiftUI
 
 struct EditPersonaView: View {
+    //MARK: - View specific properties
+    @EnvironmentObject var viewModel: ViewModel
+    @Binding var isSheetShowing: Bool
+    @State var selectedImage: [PhotosPickerItem] = []
+    // MARK: Trying ui sheet dismiss...
+    @Environment(\.presentationMode) var presentationMode
     
-    @State var persona: Persona
+    var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
     
+    @State var isNew = false
     @State private var showingImagePicker = false
     @State private var showingGalleryImagePicker = false
+    @State private var sourceType: UIImagePickerController.SourceType?
     
-    @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
-    
-    let networkSingleton = NetworkSingleton()
-    
+    //MARK: - Persona specific properties
     @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
-    
-    @State private var galleryImage: UIImage? = UIImage(systemName: "circle.fill")
-    
     @State private var imageAssetArray: [CKAsset] = []
-    
     @State private var title: String = ""
     @State private var name: String = ""
     @State private var headline: String = ""
@@ -28,89 +35,103 @@ struct EditPersonaView: View {
     @State private var email: String = ""
     @State private var phone: String = ""
     @State private var images: [UIImage] = []
-    @State private var isUpdating: Bool = false
-    @State private var error: String?
+    @State private var isFavorite: Bool = false
+    @State private var website: String = ""
     
     var body: some View {
-        
         ScrollView(showsIndicators: false) {
-            VStack {
-                Image(uiImage: image!)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .scaledToFit()
-                    .clipShape(Circle())
+            VStack(spacing: 20) {
+                AvatarImagePickerView(image: self.$image)
+                // MARK: TextFields
+                TextField("Title", text: $title)
+                    .textFieldStyle(.roundedBorder)
+                TextField("Name", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                //                    .keyboardType(.namePhonePad)
+                    .textInputAutocapitalization(.words)
+                TextField("Headline", text: $headline)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Bio", text: $bio, axis: .vertical)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(40)
+                DatePicker(selection: $birthdate, displayedComponents: .date) {
+                    Text("Birthday")
+                }
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.emailAddress)
+                TextField("Website", text: $website)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.webSearch)
+                TextField("Phone", text: $phone)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.phonePad)
                 
-                HStack {
-                    Button("Select Image") {
-                        sourceType = .photoLibrary
-                        self.showingImagePicker = true
-                    }
-                    Button("Take Photo") {
-                        sourceType = .camera
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                            self.showingImagePicker = true
-                        } else {
-                            print("Camera not available")
-                            // Show an error message or take some other action
+                // MARK: Gallery View
+                VStack {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(images, id: \.self) { image in
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .frame(width: 300, height: 200)
+                                    .aspectRatio(contentMode: .fill)
+                                    .clipped()
+                                    .contextMenu {
+                                        Button(action: {
+                                            self.images.remove(at: self.images.firstIndex(of: image)!)
+                                        }) {
+                                            Text("Delete")
+                                            Image(systemName: "trash")
+                                        }
+                                    }
+                            }
                         }
                     }
-                    Button("Generate Random") {
-                        self.image = networkSingleton.fetchImage()
-                    }
-                }
-                .sheet(isPresented: $showingImagePicker) {
-                    ImagePicker(image: self.$image, sourcetype: self.$sourceType)
-                }
-                VStack {
-                    TextField("Title", text: $title)
-                        .textFieldStyle(.roundedBorder)
-                    TextField("Name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Headline", text: $headline)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Bio", text: $bio)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    DatePicker(selection: $birthdate, displayedComponents: .date) {
-                        Text("Birthday")
-                    }
-                    TextField("Email", text: $email)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Phone", text: $phone)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
                     VStack {
-                        HStack {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(images, id: \.self) { image in
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .frame(width: 300, height: 200)
-                                            .aspectRatio(contentMode: .fill)
-                                            .clipped()
+                        PhotosPicker (
+                            selection: $selectedImage,
+                            maxSelectionCount: 5,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            Text("Choose Photos from Gallery")
+                        }
+                        .onChange(of: selectedImage) { items in
+                            for item in items {
+                                Task {
+                                    if let data = try? await item.loadTransferable(type: Data.self) {
+                                        images.append(((UIImage(data: data) ?? UIImage(systemName: "person"))!))
                                     }
                                 }
                             }
                         }
-                        Button("Edit Gallery") {
-                            showingGalleryImagePicker = true
-                        }.buttonStyle(.borderedProminent)
+                        
+                        // MARK: Button Create/Update persona
+                        Button("Save") {
+                            if isNew {
+                                createPersona()
+                                print("User created new...")
+                                isSheetShowing.toggle()
+                                return
+                            } else {
+                                print("User edited existing...")
+                                isSheetShowing.toggle()
+                                updatePersona()
+                            }
+                            self.presentationMode.wrappedValue.dismiss()
+
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(viewModel.isLoading)
+                        .tint(.green)
+                        
+                        if viewModel.isLoading {
+                            ProgressView("Saving...")
+                                .progressViewStyle(.circular)
+                        }
                     }
-                    .sheet(isPresented: $showingGalleryImagePicker) {
-                        PhotoPicker(images: $images)
-                    }
-                    
-                    if error != nil {
-                        Text(error!)
-                            .foregroundColor(.red)
-                    }
-                    Button(action: updatePersona) {
-                        Text("Update Persona")
-                    }.buttonStyle(.borderedProminent)
-                        .disabled(isUpdating)
-                }
-                .padding()
+                }// Main Vstack
                 .onAppear {
                     self.title = self.persona.title
                     self.image = self.persona.image
@@ -120,72 +141,62 @@ struct EditPersonaView: View {
                     self.birthdate = self.persona.birthdate
                     self.email = self.persona.email
                     self.phone = self.persona.phone
-                    self.images = self.persona.images.compactMap { image in
-                        return UIImage(contentsOfFile: image.fileURL!.path)
+                    self.images = self.persona.images
+                    // MARK: This bit here seems essential to populate the array.
+                    if self.viewModel.personas.isEmpty {
+                        self.viewModel.fetchPersonas()
                     }
                 }
             }
-        }.navigationTitle("Edit Persona")
+            .padding(.horizontal)
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(image: self.$image, sourcetype: self.$sourceType)
+            }
+            .sheet(isPresented: $showingGalleryImagePicker) {
+                GalleryImagePicker(images: $images)
+            }
+            .navigationTitle("Edit Persona")
+            .alert(isPresented: $viewModel.isAlertPresented) {
+                Alert(title: Text("Error"), message: Text(self.viewModel.error))
+            }
+        } // scroll view
     }
     
-    
-    // MARK: UPDATE PERSONA
-    
     func updatePersona() {
-        isUpdating = true
-        error = nil
+        self.viewModel.updatePersona(images: self.images, image: self.image, title: self.title, name: self.name, headline: self.headline, bio: self.bio, birthdate: self.birthdate, email: self.email, phone: self.phone, recordID: persona.recordID!, isFavorite: self.isFavorite, website: self.website)
         
+        if viewModel.personas.isEmpty {
+            print("empty personas array in updatePersona helper on edit view.")
+        }
+        // MARK: Update the UI here...
+        if let index = viewModel.personas.firstIndex(where: { $0.recordID == persona.recordID }) {
+            print("Update happened on \(viewModel.personas[index].title)")
+            viewModel.personas[index] = Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website)
+            for persona in viewModel.personas {
+                print("Personas in viewmodel after update: \(persona.title)")
+            }
+        } else {
+            print("record not updated")
+            for persona in viewModel.personas {
+                print(persona.recordID ?? "no record id")
+            }
+            if viewModel.personas.isEmpty {
+                print("personas is empty")
+            }
+            print("tried to match: \(String(describing: persona.recordID))")
+        }
+    }
+    
+    func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
         }
         
-        let imageAsset = image?.convertToCKAsset()
+        viewModel.createPersona(record: Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
         
-        // Retrieve the existing record from CloudKit
-        let privateDatabase = CKContainer.default().privateCloudDatabase
-        let recordID = persona.recordID
-        privateDatabase.fetch(withRecordID: recordID!) { (record, error) in
-            if let error = error {
-                self.error = error.localizedDescription
-                self.isUpdating = false
-                return
-            }
-            
-            guard let record = record else {
-                self.error = "Failed to retrieve record"
-                self.isUpdating = false
-                return
-            }
-            
-            // Modify the record's properties
-            record["images"] = imageAssetArray
-            record["image"] = imageAsset
-            record["title"] = self.title
-            record["name"] = self.name as CKRecordValue
-            record["headline"] = self.headline as CKRecordValue
-            record["bio"] = self.bio as CKRecordValue
-            record["birthdate"] = self.birthdate as CKRecordValue
-            record["email"] = self.email as CKRecordValue
-            record["phone"] = self.phone as CKRecordValue
-            
-            privateDatabase.save(record) { (savedRecord, error) in
-                self.isUpdating = false
-                if let error = error {
-                    self.error = error.localizedDescription
-                } else {
-                    self.persona.recordID = savedRecord?.recordID
-                }
-            }
-        }
     }
-    // MARK: //UPDATE PERSONA
+    
 }
 
 
-
-//struct EditPersonaView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        EditPersonaView()
-//    }
-//}
 

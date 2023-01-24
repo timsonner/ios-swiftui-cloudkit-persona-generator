@@ -2,73 +2,67 @@
 //  PhotoPicker.swift
 //  PersonaGenerator
 //
-//  Created by Timothy Sonner on 12/27/22.
+//  Created by Timothy Sonner on 1/13/23.
 //
 
 import SwiftUI
+import PhotosUI
 
-struct PhotoPicker: View {
-    @Binding var images: [UIImage]
-    @State private var image: UIImage? = UIImage(systemName: "person.circle.fill")
-    @State private var showingImagePicker = false
-    @State private var showingGalleryImagePicker = false
-    @State private var showingInceptionImagePicker = false
+struct PhotoPicker: UIViewControllerRepresentable {
     
-    @State private var sourceType: UIImagePickerController.SourceType? = .photoLibrary
+    @Binding var pickedImage: UIImage?
     
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
     
-    let networkSingleton = NetworkSingleton()
-    
-    var body: some View {
-        VStack {
-            ScrollView(showsIndicators: false) {
-                ForEach(0..<images.count, id: \.self) { index in
-                    Image(uiImage: self.images[index])
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .contextMenu {
-                            Button(action: {
-                                self.images.remove(at: index)
-                            }) {
-                                Text("Delete")
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        picker.modalPresentationStyle = .overFullScreen
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
+    }
+
+    class Coordinator: PHPickerViewControllerDelegate {
+        var parent: PhotoPicker
+
+        init(_ parent: PhotoPicker) {
+            self.parent = parent
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            if let result = results.first {
+                result.itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+                    if let image = image as? UIImage, let cgImage = image.cgImage {
+                        // Create a CGImageSource from the selected image's CGImage
+                        guard let imageSource = CGImageSourceCreateWithData(cgImage.dataProvider!.data! as CFData, nil) else { return }
+                        
+                        // Create a CGImageDestination for a new image data object
+                        guard let imageData = CFDataCreateMutable(nil, 0) else { return }
+                        guard let imageDestination = CGImageDestinationCreateWithData(imageData, CGImageSourceGetType(imageSource)!, 1, nil) else { return }
+                        
+                        // Copy the metadata from the source image to the destination image
+                        CGImageDestinationAddImageFromSource(imageDestination, imageSource, 0, nil)
+                        
+                        // Finalize the destination image data
+                        if CGImageDestinationFinalize(imageDestination) {
+                            // Create a UIImage from the destination image data
+                            let exifPreservedImage = UIImage(data: imageData as Data)
+                            DispatchQueue.main.async {
+                                self.parent.pickedImage = exifPreservedImage
                             }
                         }
-                }
-            }
-            
-            Button(action: {
-                showingImagePicker = true
-            }) {
-                HStack {
-                    Button("Select Image") {
-                        showingInceptionImagePicker = true
-                    }.sheet(isPresented: $showingInceptionImagePicker) {
-                        GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
                     }
-                    
-                    Button("Take Photo") {
-                        sourceType = .camera
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                            self.showingImagePicker = true
-                        } else {
-                            print("Camera not available")
-                            // Show an error message or take some other action
-                        }
-                    }
-                    Button("Generate Random") {
-                        images.append( networkSingleton.fetchImage())
-                    }
-                }
-                .sheet(isPresented: $showingGalleryImagePicker) {
-                    GalleryImagePicker(images: $images, showPicker: $showingGalleryImagePicker)
                 }
             }
         }
-    }
-}
 
-//struct PhotoPicker_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PhotoPicker()
-//    }
-//}
+    }
+    
+}

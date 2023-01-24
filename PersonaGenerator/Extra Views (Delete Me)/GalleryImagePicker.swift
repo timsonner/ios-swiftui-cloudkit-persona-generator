@@ -9,7 +9,6 @@ import SwiftUI
 
 struct GalleryImagePicker: UIViewControllerRepresentable {
     @Binding var images: [UIImage]
-    @Binding var showPicker: Bool
     @Environment(\.presentationMode) var presentationMode
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         var parent: GalleryImagePicker
@@ -23,7 +22,6 @@ struct GalleryImagePicker: UIViewControllerRepresentable {
                 parent.images.append(uiImage)
             }
             parent.presentationMode.wrappedValue.dismiss()
-            parent.showPicker = false
         }
     }
     
