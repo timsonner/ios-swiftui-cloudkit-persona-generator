@@ -14,6 +14,8 @@ struct EditPersonaView: View {
     @EnvironmentObject var viewModel: ViewModel
     @Binding var isSheetShowing: Bool
     @State var selectedImage: [PhotosPickerItem] = []
+    // MARK: Trying ui sheet dismiss...
+    @Environment(\.presentationMode) var presentationMode
     
     var persona = Persona(recordID: CKRecord.ID(), title: "", image: UIImage(systemName: "person.circle.fill")!, name: "", headline: "", bio: "", birthdate: Date(), email: "", phone: "", images: [], isFavorite: false, website: "")
     
@@ -110,15 +112,15 @@ struct EditPersonaView: View {
                             if isNew {
                                 createPersona()
                                 print("User created new...")
-                                print("clickery")
                                 isSheetShowing.toggle()
                                 return
                             } else {
                                 print("User edited existing...")
                                 isSheetShowing.toggle()
-                                
                                 updatePersona()
                             }
+                            self.presentationMode.wrappedValue.dismiss()
+
                         }
                         .buttonStyle(.borderedProminent)
                         .disabled(viewModel.isLoading)
@@ -185,8 +187,6 @@ struct EditPersonaView: View {
         }
     }
     
-    
-    
     func createPersona() {
         for image in images {
             imageAssetArray.append(image.convertToCKAsset()!)
@@ -195,8 +195,6 @@ struct EditPersonaView: View {
         viewModel.createPersona(record: Persona(recordID: persona.recordID, title: title, image: image!, name: name, headline: headline, bio: bio, birthdate: birthdate, email: email, phone: phone, images: images, isFavorite: isFavorite, website: website))
         
     }
-    
-    
     
 }
 

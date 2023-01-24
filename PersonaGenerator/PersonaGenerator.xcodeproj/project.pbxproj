@@ -24,7 +24,6 @@
 		2BCE609F2966A4D1008D2453 /* PersonaRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE609E2966A4D1008D2453 /* PersonaRowView.swift */; };
 		2BCE60A1296836A4008D2453 /* AvatarImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */; };
 		2BCE60A329685C09008D2453 /* TestImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BCE60A229685C09008D2453 /* TestImagePicker.swift */; };
-		2BFD6539297D645B00CAB7B7 /* foo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFD6538297D645B00CAB7B7 /* foo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,7 +46,6 @@
 		2BCE609E2966A4D1008D2453 /* PersonaRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonaRowView.swift; sourceTree = "<group>"; };
 		2BCE60A0296836A4008D2453 /* AvatarImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImagePickerView.swift; sourceTree = "<group>"; };
 		2BCE60A229685C09008D2453 /* TestImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestImagePicker.swift; sourceTree = "<group>"; };
-		2BFD6538297D645B00CAB7B7 /* foo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = foo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +65,6 @@
 				2BCE608029667F0A008D2453 /* ViewModel.swift */,
 				2BBCEA6629554F1E00B5CFE3 /* PersonaModel.swift */,
 				2B92313B295A387000DA7F22 /* ManagePersonasListView.swift */,
-				2BFD6538297D645B00CAB7B7 /* foo.swift */,
 				2BCE609E2966A4D1008D2453 /* PersonaRowView.swift */,
 				2B21285429718552009E1E18 /* PhotoPicker.swift */,
 				2B923139295967DF00DA7F22 /* EditPersonaView.swift */,
@@ -197,7 +194,6 @@
 				2BCE60A1296836A4008D2453 /* AvatarImagePickerView.swift in Sources */,
 				2BBCEA5729554E2400B5CFE3 /* PersonaGeneratorApp.swift in Sources */,
 				2BCE608129667F0A008D2453 /* ViewModel.swift in Sources */,
-				2BFD6539297D645B00CAB7B7 /* foo.swift in Sources */,
 				2B21285529718552009E1E18 /* PhotoPicker.swift in Sources */,
 				2B92313C295A387000DA7F22 /* ManagePersonasListView.swift in Sources */,
 				2B92313629592FD800DA7F22 /* GalleryImagePicker.swift in Sources */,
